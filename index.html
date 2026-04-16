@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#1a73e8" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<title>GPay Budget</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Text:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --gpay-blue:#1a73e8;
+    --gpay-blue-dark:#1557b0;
+    --gpay-green:#34a853;
+    --gpay-red:#ea4335;
+    --gpay-yellow:#fbbc04;
+    --ink:#202124;
+    --ink-soft:#5f6368;
+    --ink-softer:#80868b;
+    --line:#e8eaed;
+    --bg:#ffffff;
+    --bg-soft:#f1f3f4;
+    --bg-softer:#f8f9fa;
+    --shadow:0 1px 2px rgba(60,64,67,.1), 0 1px 3px 1px rgba(60,64,67,.05);
+    --shadow-lg:0 4px 8px rgba(60,64,67,.12), 0 4px 16px rgba(60,64,67,.08);
+    --safe-top:env(safe-area-inset-top, 0px);
+    --safe-bottom:env(safe-area-inset-bottom, 0px);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;width:100%;overflow:hidden;overscroll-behavior:none}
+  body{
+    font-family:'Google Sans Text','Roboto',system-ui,sans-serif;
+    background:#fff;
+    color:var(--ink);
+    position:fixed;
+    inset:0;
+  }
+
+  /* ============= APP SHELL ============= */
+  .app{
+    display:flex;flex-direction:column;
+    height:100%;width:100%;
+    padding-top:var(--safe-top);
+    padding-bottom:var(--safe-bottom);
+  }
+
+  /* header bar */
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:10px 16px 6px;
+    flex-shrink:0;
+  }
+  .topbar .brand{
+    font-family:'Google Sans',sans-serif;
+    font-size:13px;font-weight:700;color:var(--ink-softer);
+    letter-spacing:.5px;
+  }
+  .topbar .avatar{
+    width:34px;height:34px;border-radius:50%;
+    background:linear-gradient(135deg,#1a73e8,#8ab4f8);
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-weight:700;font-size:13px;
+    font-family:'Google Sans',sans-serif;
+  }
+  .fab-controls{
+    width:36px;height:36px;border-radius:50%;
+    background:var(--ink);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    border:none;cursor:pointer;
+    font-size:16px;
+  }
+
+  /* body/screens */
+  .body{
+    flex:1;
+    overflow-y:auto;
+    overflow-x:hidden;
+    -webkit-overflow-scrolling:touch;
+  }
+  .screen-view{
+    display:none;
+    padding:4px 18px 24px;
+    animation:fadeIn .2s ease;
+  }
+  .screen-view.active{display:block}
+  @keyframes fadeIn{
+    from{opacity:0;transform:translateY(4px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+
+  /* tabbar */
+  .tabbar{
+    border-top:1px solid var(--line);
+    background:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    padding:6px 8px 6px;
+    flex-shrink:0;
+  }
+  .tab{
+    display:flex;flex-direction:column;align-items:center;gap:3px;
+    font-size:10.5px;color:var(--ink-soft);font-weight:500;
+    cursor:pointer;border:none;background:none;padding:4px 12px;
+    border-radius:12px;
+    font-family:'Google Sans Text',sans-serif;
+  }
+  .tab svg{width:22px;height:22px;fill:var(--ink-soft)}
+  .tab.active{color:var(--gpay-blue)}
+  .tab.active svg{fill:var(--gpay-blue)}
+  .tab-icon-pill{
+    width:44px;height:26px;border-radius:13px;
+    background:var(--bg-soft);
+    display:flex;align-items:center;justify-content:center;
+    transition:background .2s;
+  }
+  .tab.active .tab-icon-pill{background:#e8f0fe}
+
+  /* ================= Screens ================= */
+  .sh-header{
+    display:flex;align-items:center;justify-content:space-between;
+    margin:6px 0 16px;
+  }
+  .sh-title{
+    font-family:'Google Sans',sans-serif;
+    font-size:22px;font-weight:700;color:var(--ink);
+  }
+  .sh-sub{font-size:13px;color:var(--ink-soft);margin-top:2px}
+  .close-x{
+    width:32px;height:32px;border-radius:50%;
+    background:var(--bg-soft);
+    display:flex;align-items:center;justify-content:center;
+    border:none;cursor:pointer;font-size:16px;color:var(--ink);
+  }
+
+  /* hero budget card */
+  .hero-card{
+    background:linear-gradient(135deg,#1a73e8 0%,#4285f4 60%, #8ab4f8 100%);
+    color:#fff;
+    border-radius:20px;
+    padding:22px 20px;
+    position:relative;
+    overflow:hidden;
+    box-shadow:0 10px 25px -10px rgba(26,115,232,.5);
+  }
+  .hero-card::before{
+    content:'';position:absolute;inset:0;
+    background:radial-gradient(400px 200px at 100% 0%, rgba(255,255,255,.15), transparent 60%);
+    pointer-events:none;
+  }
+  .hero-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+  .hero-label{font-size:11px;opacity:.9;letter-spacing:.3px;text-transform:uppercase;font-weight:500}
+  .hero-month{font-size:12px;opacity:.85;font-weight:500}
+  .hero-amount{
+    font-family:'Google Sans',sans-serif;
+    font-size:32px;font-weight:700;letter-spacing:-.5px;
+    line-height:1.1;margin-bottom:4px;
+  }
+  .hero-sub{font-size:13px;opacity:.9}
+  .progress{
+    margin-top:16px;
+    height:8px;background:rgba(255,255,255,.2);
+    border-radius:99px;overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;background:#fff;border-radius:99px;
+    transition:width 1s cubic-bezier(.2,.8,.2,1);
+  }
+  .progress-meta{
+    display:flex;justify-content:space-between;margin-top:8px;
+    font-size:11.5px;opacity:.9;font-weight:500;
+  }
+
+  /* no-budget empty */
+  .no-budget{
+    background:linear-gradient(135deg,#f8f9fa,#fff);
+    border:1.5px dashed var(--line);
+    border-radius:20px;
+    padding:28px 20px;text-align:center;
+  }
+  .no-budget .icon{
+    width:56px;height:56px;border-radius:50%;
+    background:#e8f0fe;margin:0 auto 12px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .no-budget h3{font-family:'Google Sans',sans-serif;font-size:17px;font-weight:600;margin-bottom:6px}
+  .no-budget p{font-size:13px;color:var(--ink-soft);margin-bottom:16px;line-height:1.4}
+
+  /* buttons */
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:6px;
+    padding:13px 22px;
+    border-radius:999px;
+    font-family:'Google Sans',sans-serif;
+    font-size:14px;font-weight:500;
+    border:none;cursor:pointer;
+    transition:transform .12s ease, background .15s;
+    text-decoration:none;
+  }
+  .btn:active{transform:scale(.97)}
+  .btn-primary{background:var(--gpay-blue);color:#fff;box-shadow:0 4px 10px -3px rgba(26,115,232,.5)}
+  .btn-ghost{background:transparent;color:var(--gpay-blue);border:1px solid var(--line)}
+  .btn-danger{background:var(--gpay-red);color:#fff}
+  .btn-block{width:100%}
+
+  /* sections */
+  .sec-title{
+    display:flex;justify-content:space-between;align-items:center;
+    margin:22px 0 10px;
+  }
+  .sec-title h4{
+    font-family:'Google Sans',sans-serif;
+    font-size:15px;font-weight:600;color:var(--ink);
+  }
+  .sec-title a{
+    font-size:12.5px;color:var(--gpay-blue);text-decoration:none;font-weight:500;cursor:pointer;
+  }
+
+  /* transactions */
+  .tx-list{display:flex;flex-direction:column}
+  .tx{
+    display:flex;align-items:center;gap:12px;
+    padding:12px 4px;
+    border-bottom:1px solid var(--line);
+  }
+  .tx:last-child{border-bottom:none}
+  .tx-icon{
+    width:42px;height:42px;border-radius:50%;
+    background:var(--bg-soft);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:600;color:#fff;font-size:15px;flex-shrink:0;
+    font-family:'Google Sans',sans-serif;
+  }
+  .tx-info{flex:1;min-width:0}
+  .tx-name{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:6px}
+  .tx-meta{font-size:11.5px;color:var(--ink-softer);display:flex;gap:6px;align-items:center}
+  .tx-method{
+    padding:1.5px 6px;border-radius:4px;background:var(--bg-soft);
+    font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:.3px;
+  }
+  .tx-method.upi{background:#e8f0fe;color:#1557b0}
+  .tx-method.cc{background:#fce8e6;color:#c5221f}
+  .tx-method.bnpl{background:#fff4d6;color:#8a6d00}
+  .tx-amount{font-family:'Google Sans',sans-serif;font-size:14px;font-weight:600;color:var(--ink)}
+  .tx-tag{
+    display:inline-block;padding:1px 5px;border-radius:4px;
+    font-size:9px;font-weight:700;letter-spacing:.3px;
+  }
+  .tag-m{background:#fde7e7;color:#c5221f}
+  .tag-nm{background:#fff4d6;color:#8a6d00}
+
+  /* notification banner */
+  .notif-banner{
+    background:#fef7e0;
+    border:1px solid #fbe8a0;
+    border-radius:14px;
+    padding:14px;
+    display:flex;gap:12px;align-items:flex-start;
+    cursor:pointer;
+    transition:transform .15s;
+  }
+  .notif-banner:active{transform:scale(.98)}
+  .notif-banner.red{background:#fce8e6;border-color:#f4b4ae}
+  .notif-icon{
+    width:34px;height:34px;border-radius:50%;flex-shrink:0;
+    background:var(--gpay-yellow);
+    display:flex;align-items:center;justify-content:center;color:#fff;
+  }
+  .notif-banner.red .notif-icon{background:var(--gpay-red)}
+  .notif-text{flex:1}
+  .notif-text h5{font-family:'Google Sans',sans-serif;font-size:14px;font-weight:600;margin-bottom:2px}
+  .notif-text p{font-size:12px;color:var(--ink-soft);line-height:1.4}
+
+  /* Set Budget form */
+  .form-label{
+    display:block;font-size:12px;color:var(--ink-soft);font-weight:500;
+    margin:18px 0 6px;letter-spacing:.3px;
+  }
+  .money-input{
+    display:flex;align-items:center;gap:10px;
+    padding:14px 16px;
+    background:var(--bg-softer);
+    border:2px solid var(--line);
+    border-radius:14px;
+    transition:border .2s;
+  }
+  .money-input:focus-within{border-color:var(--gpay-blue);background:#fff}
+  .money-input .sym{font-family:'Google Sans',sans-serif;font-size:22px;font-weight:500;color:var(--ink-soft)}
+  .money-input input{
+    border:none;outline:none;background:transparent;flex:1;
+    font-family:'Google Sans',sans-serif;
+    font-size:24px;font-weight:500;color:var(--ink);width:100%;
+  }
+  .quick-amts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .qa{
+    padding:7px 12px;border-radius:999px;background:var(--bg-soft);
+    font-size:12px;color:var(--ink);font-weight:500;cursor:pointer;
+    border:none;
+    font-family:'Google Sans Text',sans-serif;
+  }
+
+  /* caps */
+  .cap-list{display:flex;flex-direction:column;gap:10px}
+  .cap-row{
+    display:flex;align-items:center;gap:12px;
+    padding:12px;border:1px solid var(--line);border-radius:12px;
+    background:#fff;
+  }
+  .cap-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+  .cap-row label{flex:1;font-size:13.5px;font-weight:500}
+  .cap-row input{
+    width:90px;text-align:right;border:1px solid var(--line);
+    border-radius:8px;padding:7px 10px;font-size:13px;
+    font-family:'Google Sans',sans-serif;outline:none;
+  }
+  .cap-row input:focus{border-color:var(--gpay-blue)}
+
+  /* pay screen */
+  .pay-head{text-align:center;padding:24px 0 8px}
+  .merchant-icon{
+    width:64px;height:64px;border-radius:50%;
+    background:var(--gpay-red);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Google Sans',sans-serif;font-size:28px;font-weight:700;
+    margin:0 auto 12px;
+  }
+  .merchant-name{font-family:'Google Sans',sans-serif;font-size:17px;font-weight:600;margin-bottom:2px}
+  .merchant-upi{font-size:12px;color:var(--ink-softer)}
+  .pay-amount{
+    text-align:center;margin:20px 0;
+    font-family:'Google Sans',sans-serif;
+    font-size:44px;font-weight:500;letter-spacing:-1px;
+  }
+  .pay-note{
+    text-align:center;font-size:13px;color:var(--ink-soft);
+    margin-bottom:20px;
+  }
+  .pay-method{
+    border:1px solid var(--line);
+    border-radius:14px;padding:14px;margin-bottom:14px;
+    display:flex;align-items:center;gap:12px;
+  }
+  .pay-method-icon{
+    width:40px;height:40px;border-radius:50%;
+    background:#f6871f;color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:13px;font-family:'Google Sans',sans-serif;
+  }
+  .pay-method-info{flex:1}
+  .pay-method-info .bank{font-size:13px;font-weight:600}
+  .pay-method-info .num{font-size:11.5px;color:var(--ink-softer)}
+
+  .budget-warn{
+    background:#fce8e6;border:1px solid #f4b4ae;
+    border-radius:12px;padding:12px 14px;margin-bottom:14px;
+    display:flex;gap:10px;align-items:flex-start;
+  }
+  .budget-warn-icon{
+    width:30px;height:30px;border-radius:50%;background:var(--gpay-red);
+    color:#fff;display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .budget-warn h6{font-size:13px;font-weight:700;margin-bottom:2px;font-family:'Google Sans',sans-serif}
+  .budget-warn p{font-size:11.5px;color:var(--ink-soft);line-height:1.4}
+
+  /* overview */
+  .pie-wrap{display:flex;flex-direction:column;align-items:center;padding:16px 0 8px}
+  .pie-svg{width:200px;height:200px}
+  .pie-relative{position:relative;display:flex;align-items:center;justify-content:center}
+  .pie-center{position:absolute;text-align:center;pointer-events:none}
+  .pie-total-label{font-size:11px;color:var(--ink-softer);letter-spacing:.3px;text-transform:uppercase;font-weight:500}
+  .pie-total{font-family:'Google Sans',sans-serif;font-size:22px;font-weight:700;color:var(--ink)}
+
+  .cat-breakdown{margin-top:16px}
+  .cat-row{
+    display:flex;align-items:center;gap:10px;
+    padding:11px 4px;border-bottom:1px solid var(--line);
+  }
+  .cat-row:last-child{border-bottom:none}
+  .cat-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+  .cat-name{flex:1;font-size:13.5px;font-weight:500;display:flex;align-items:center;gap:6px}
+  .cat-amt{font-family:'Google Sans',sans-serif;font-size:13px;font-weight:600}
+  .cat-pct{font-size:11px;color:var(--ink-softer);width:40px;text-align:right}
+
+  .toggle-group{
+    display:flex;background:var(--bg-soft);
+    padding:3px;border-radius:999px;margin-bottom:4px;
+  }
+  .toggle-group button{
+    flex:1;padding:8px 10px;border-radius:999px;
+    border:none;background:transparent;
+    font-size:12px;font-weight:500;color:var(--ink-soft);
+    cursor:pointer;transition:all .2s;
+    font-family:'Google Sans',sans-serif;
+  }
+  .toggle-group button.on{background:#fff;color:var(--ink);box-shadow:var(--shadow)}
+
+  /* family */
+  .member-list{display:flex;gap:12px;overflow-x:auto;padding:4px 0 12px;scrollbar-width:none}
+  .member-list::-webkit-scrollbar{display:none}
+  .member{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:60px}
+  .member-av{
+    width:52px;height:52px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-weight:700;font-size:18px;
+    font-family:'Google Sans',sans-serif;
+    border:2px solid #fff;box-shadow:var(--shadow);
+  }
+  .member-av.add{background:var(--bg-soft);color:var(--ink-soft);border:1.5px dashed var(--ink-softer)}
+  .member-name{font-size:11px;font-weight:500;color:var(--ink-soft)}
+
+  .bill-list{display:flex;flex-direction:column;gap:8px}
+  .bill-row{
+    display:flex;align-items:center;gap:12px;
+    padding:12px;
+    background:var(--bg-softer);
+    border-radius:12px;
+    border:1px solid var(--line);
+  }
+  .bill-check{
+    width:24px;height:24px;border-radius:6px;
+    border:2px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;flex-shrink:0;background:#fff;transition:all .15s;
+  }
+  .bill-check.on{background:var(--gpay-green);border-color:var(--gpay-green)}
+  .bill-check.on svg{fill:#fff;width:14px;height:14px;display:block}
+  .bill-check svg{display:none}
+  .bill-label{flex:1}
+  .bill-name{font-size:14px;font-weight:500}
+  .bill-desc{font-size:11.5px;color:var(--ink-softer)}
+  .bill-amount{font-family:'Google Sans',sans-serif;font-size:14px;font-weight:600}
+
+  /* home quick icons */
+  .home-icons{
+    display:grid;grid-template-columns:repeat(4,1fr);
+    gap:8px;margin:14px 0 4px;
+  }
+  .home-ic{
+    display:flex;flex-direction:column;align-items:center;gap:6px;
+    padding:10px 2px;border-radius:12px;cursor:pointer;
+    border:none;background:none;
+  }
+  .home-ic:active{background:var(--bg-softer)}
+  .home-ic-circle{
+    width:44px;height:44px;border-radius:50%;
+    background:var(--bg-soft);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .home-ic-circle svg{width:22px;height:22px}
+  .home-ic-label{font-size:11px;color:var(--ink);font-weight:500;text-align:center;line-height:1.2}
+
+  .home-banner{
+    background:linear-gradient(135deg,#e8f0fe,#d2e3fc);
+    border-radius:16px;padding:16px;
+    display:flex;gap:14px;align-items:center;cursor:pointer;
+    transition:transform .15s;
+  }
+  .home-banner:active{transform:scale(.98)}
+  .home-banner-icon{
+    width:42px;height:42px;border-radius:50%;
+    background:var(--gpay-blue);color:#fff;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .home-banner h5{font-family:'Google Sans',sans-serif;font-size:14px;font-weight:600;margin-bottom:2px}
+  .home-banner p{font-size:12px;color:var(--ink-soft);line-height:1.35}
+
+  /* modals */
+  .modal-bg{
+    position:fixed;inset:0;background:rgba(0,0,0,.5);
+    display:none;align-items:center;justify-content:center;
+    z-index:200;padding:24px;
+  }
+  .modal-bg.on{display:flex;animation:fadeIn .2s ease}
+  .modal{
+    background:#fff;border-radius:22px;padding:26px 22px;
+    max-width:320px;width:100%;text-align:center;
+  }
+  .modal-icon{
+    width:60px;height:60px;border-radius:50%;
+    background:var(--gpay-green);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    margin:0 auto 14px;
+  }
+  .modal h3{font-family:'Google Sans',sans-serif;font-size:18px;font-weight:600;margin-bottom:6px}
+  .modal p{font-size:13px;color:var(--ink-soft);margin-bottom:18px;line-height:1.4}
+
+  /* ============= SCENARIO DRAWER ============= */
+  .drawer-backdrop{
+    position:fixed;inset:0;background:rgba(0,0,0,.4);
+    z-index:300;opacity:0;pointer-events:none;
+    transition:opacity .25s ease;
+  }
+  .drawer-backdrop.on{opacity:1;pointer-events:auto}
+
+  .drawer{
+    position:fixed;left:0;right:0;bottom:0;
+    background:#fff;
+    border-radius:24px 24px 0 0;
+    padding:12px 20px calc(20px + var(--safe-bottom));
+    z-index:310;
+    transform:translateY(100%);
+    transition:transform .3s cubic-bezier(.2,.9,.2,1);
+    box-shadow:0 -10px 30px rgba(0,0,0,.2);
+    max-height:80vh;
+    overflow-y:auto;
+  }
+  .drawer.on{transform:translateY(0)}
+  .drawer-grip{
+    width:36px;height:4px;background:var(--line);border-radius:2px;
+    margin:0 auto 14px;
+  }
+  .drawer h3{
+    font-family:'Google Sans',sans-serif;
+    font-size:17px;font-weight:700;margin-bottom:4px;
+  }
+  .drawer .sub{font-size:12.5px;color:var(--ink-soft);margin-bottom:16px;line-height:1.4}
+
+  .scenario-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:10px;
+  }
+  .scenario-btn{
+    display:flex;flex-direction:column;align-items:flex-start;gap:4px;
+    padding:14px;
+    background:var(--bg-softer);
+    border:1px solid var(--line);
+    border-radius:14px;
+    cursor:pointer;
+    text-align:left;
+    font-family:'Google Sans Text',sans-serif;
+    transition:background .15s;
+  }
+  .scenario-btn:active{background:var(--bg-soft)}
+  .scenario-btn .emoji{font-size:22px}
+  .scenario-btn .label{font-size:13px;font-weight:600;color:var(--ink)}
+  .scenario-btn .state{font-size:11px;color:var(--ink-soft)}
+
+  .scenario-btn.active{
+    background:#e8f0fe;border-color:var(--gpay-blue);
+  }
+  .scenario-btn.active .label{color:var(--gpay-blue-dark)}
+
+  .drawer-note{
+    margin-top:16px;padding:12px;
+    background:#fef7e0;
+    border-radius:10px;
+    font-size:11.5px;color:#604d00;
+    line-height:1.5;
+  }
+
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Top strip -->
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button class="fab-controls" onclick="openDrawer()" title="Scenarios">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+      </button>
+      <span class="brand">GPAY · BUDGET</span>
+    </div>
+    <div class="avatar">R</div>
+  </div>
+
+  <!-- Body -->
+  <div class="body" id="scrollable-body">
+
+    <!-- HOME -->
+    <section id="screen-home" class="screen-view active">
+      <div class="sh-header">
+        <div>
+          <div class="sh-title">Home</div>
+          <div class="sh-sub" id="home-date">Wed, 15 May</div>
+        </div>
+      </div>
+
+      <div id="home-banner-area"></div>
+
+      <div class="home-icons">
+        <button class="home-ic" onclick="go('money')">
+          <div class="home-ic-circle" style="background:#e8f0fe"><svg viewBox="0 0 24 24" style="fill:#1a73e8"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg></div>
+          <div class="home-ic-label">Budget</div>
+        </button>
+        <button class="home-ic" onclick="go('pay')">
+          <div class="home-ic-circle" style="background:#e6f4ea"><svg viewBox="0 0 24 24" style="fill:#34a853"><path d="M21 7.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11.5L21 7.5zM12 17a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/></svg></div>
+          <div class="home-ic-label">Pay</div>
+        </button>
+        <button class="home-ic" onclick="go('bills')">
+          <div class="home-ic-circle" style="background:#fef7e0"><svg viewBox="0 0 24 24" style="fill:#8a6d00"><path d="M4 4h16v2H4zm0 4h16v10H4zm2 2v6h12v-6H6zm2 1h4v1H8zm0 2h8v1H8z"/></svg></div>
+          <div class="home-ic-label">Bills</div>
+        </button>
+        <button class="home-ic" onclick="go('overview')">
+          <div class="home-ic-circle" style="background:#fce8e6"><svg viewBox="0 0 24 24" style="fill:#ea4335"><path d="M11 2v20a10 10 0 0 1-10-10 10 10 0 0 1 10-10zm2 0a10 10 0 0 1 10 10h-10V2z"/></svg></div>
+          <div class="home-ic-label">Overview</div>
+        </button>
+      </div>
+
+      <div class="sec-title">
+        <h4>Recent activity</h4>
+        <a onclick="go('money')">View all</a>
+      </div>
+      <div class="tx-list" id="home-tx"></div>
+    </section>
+
+    <!-- MONEY -->
+    <section id="screen-money" class="screen-view">
+      <div class="sh-header">
+        <div>
+          <div class="sh-title">Money</div>
+          <div class="sh-sub" id="money-month">May 2026</div>
+        </div>
+      </div>
+
+      <div id="budget-area"></div>
+      <div id="notif-area" style="margin-top:14px"></div>
+
+      <div class="sec-title">
+        <h4>Transaction history</h4>
+        <a onclick="go('overview')">See overview</a>
+      </div>
+      <div class="tx-list" id="money-tx"></div>
+    </section>
+
+    <!-- SET BUDGET -->
+    <section id="screen-setbudget" class="screen-view">
+      <div class="sh-header">
+        <div>
+          <div class="sh-title">Set monthly budget</div>
+          <div class="sh-sub">For <span id="sb-month">May 2026</span></div>
+        </div>
+        <button class="close-x" onclick="go('money')">✕</button>
+      </div>
+
+      <label class="form-label">Total monthly limit</label>
+      <div class="money-input">
+        <span class="sym">₹</span>
+        <input type="text" id="sb-amount" placeholder="1,50,000" inputmode="numeric" />
+      </div>
+      <div class="quick-amts">
+        <button class="qa" onclick="setQuick(50000)">₹50,000</button>
+        <button class="qa" onclick="setQuick(100000)">₹1,00,000</button>
+        <button class="qa" onclick="setQuick(150000)">₹1,50,000</button>
+        <button class="qa" onclick="setQuick(200000)">₹2,00,000</button>
+      </div>
+
+      <label class="form-label">Caps by payment method</label>
+      <div class="cap-list">
+        <div class="cap-row">
+          <span class="cap-dot" style="background:#1a73e8"></span>
+          <label>UPI spends</label>
+          <input type="text" value="60,000" />
+        </div>
+        <div class="cap-row">
+          <span class="cap-dot" style="background:#ea4335"></span>
+          <label>Credit card</label>
+          <input type="text" value="70,000" />
+        </div>
+        <div class="cap-row">
+          <span class="cap-dot" style="background:#fbbc04"></span>
+          <label>Buy now, pay later</label>
+          <input type="text" value="20,000" />
+        </div>
+      </div>
+
+      <div style="margin-top:24px">
+        <button class="btn btn-primary btn-block" onclick="saveBudget()">Save budget</button>
+        <button class="btn btn-ghost btn-block" style="margin-top:10px" onclick="go('family')">Create family budget instead →</button>
+      </div>
+    </section>
+
+    <!-- PAY -->
+    <section id="screen-pay" class="screen-view">
+      <div class="sh-header">
+        <div>
+          <div class="sh-title" style="font-size:17px">Pay Mehra Electronics</div>
+        </div>
+        <button class="close-x" onclick="go('home')">✕</button>
+      </div>
+
+      <div class="pay-head">
+        <div class="merchant-icon">M</div>
+        <div class="merchant-name">Mehra Electronics</div>
+        <div class="merchant-upi">mehra@okhdfc</div>
+      </div>
+
+      <div class="pay-amount">₹4,000</div>
+      <div class="pay-note">Paying ₹4,000 — tap and go</div>
+
+      <div id="pay-warn-area"></div>
+
+      <label class="form-label" style="margin-top:0">Paying from</label>
+      <div class="pay-method">
+        <div class="pay-method-icon">IC</div>
+        <div class="pay-method-info">
+          <div class="bank">ICICI Bank</div>
+          <div class="num">XXXX XXXX 7498 · UPI</div>
+        </div>
+        <svg width="20" height="20" viewBox="0 0 24 24" style="fill:var(--ink-soft)"><path d="M7 10l5 5 5-5z"/></svg>
+      </div>
+
+      <div style="margin-top:20px">
+        <button class="btn btn-primary btn-block" id="pay-btn" onclick="confirmPay()">Pay ₹4,000</button>
+      </div>
+    </section>
+
+    <!-- OVERVIEW -->
+    <section id="screen-overview" class="screen-view">
+      <div class="sh-header">
+        <div>
+          <div class="sh-title">Expenditure</div>
+          <div class="sh-sub">May 2026 · so far</div>
+        </div>
+        <button class="close-x" onclick="go('money')">✕</button>
+      </div>
+
+      <div class="toggle-group">
+        <button id="tog-all" class="on" onclick="setOverviewMode('all')">All</button>
+        <button id="tog-m" onclick="setOverviewMode('mandatory')">Mandatory</button>
+        <button id="tog-nm" onclick="setOverviewMode('non')">Non-mandatory</button>
+      </div>
+
+      <div class="pie-wrap">
+        <div class="pie-relative">
+          <svg class="pie-svg" viewBox="0 0 42 42">
+            <circle cx="21" cy="21" r="15.915" fill="#fff"/>
+            <g id="pie-segments"></g>
+            <circle cx="21" cy="21" r="10" fill="#fff"/>
+          </svg>
+          <div class="pie-center">
+            <div class="pie-total-label">Spent</div>
+            <div class="pie-total" id="pie-total">₹1,20,000</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cat-breakdown" id="cat-breakdown"></div>
+    </section>
+
+    <!-- BILLS -->
+    <section id="screen-bills" class="screen-view">
+      <div class="sh-header">
+        <div>
+          <div class="sh-title">Setup bills</div>
+          <div class="sh-sub">Auto-track mandatory spends</div>
+        </div>
+        <button class="close-x" onclick="go('home')">✕</button>
+      </div>
+
+      <p style="font-size:13px;color:var(--ink-soft);line-height:1.5;margin-bottom:14px">
+        Mark recurring payments so we can separate needs from wants in your overview.
+      </p>
+
+      <div class="bill-list" id="bill-list"></div>
+
+      <div style="margin-top:18px">
+        <button class="btn btn-primary btn-block" onclick="go('overview')">Save and continue</button>
+      </div>
+    </section>
+
+    <!-- FAMILY -->
+    <section id="screen-family" class="screen-view">
+      <div class="sh-header">
+        <div>
+          <div class="sh-title">Family budget</div>
+          <div class="sh-sub">Shared pool, shared insights</div>
+        </div>
+        <button class="close-x" onclick="go('money')">✕</button>
+      </div>
+
+      <label class="form-label" style="margin-top:0">Members</label>
+      <div class="member-list">
+        <div class="member"><div class="member-av" style="background:#1a73e8">R</div><div class="member-name">You</div></div>
+        <div class="member"><div class="member-av" style="background:#34a853">P</div><div class="member-name">Priya</div></div>
+        <div class="member"><div class="member-av" style="background:#fbbc04">A</div><div class="member-name">Amit</div></div>
+        <div class="member"><div class="member-av add">+</div><div class="member-name">Add</div></div>
+      </div>
+
+      <label class="form-label">Monthly pool</label>
+      <div class="money-input">
+        <span class="sym">₹</span>
+        <input type="text" id="family-amt" value="80,000" />
+      </div>
+
+      <label class="form-label">Shared mandatory spends</label>
+      <div class="bill-list">
+        <div class="bill-row">
+          <div class="bill-check on" onclick="toggleCheck(this)"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5-1.4 1.4L9 19 20 8l-1.4-1.4z"/></svg></div>
+          <div class="bill-label"><div class="bill-name">Home loan EMI</div><div class="bill-desc">HDFC · 3rd of every month</div></div>
+          <div class="bill-amount">₹40,000</div>
+        </div>
+        <div class="bill-row">
+          <div class="bill-check on" onclick="toggleCheck(this)"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5-1.4 1.4L9 19 20 8l-1.4-1.4z"/></svg></div>
+          <div class="bill-label"><div class="bill-name">Utilities</div><div class="bill-desc">Electricity + internet</div></div>
+          <div class="bill-amount">₹5,000</div>
+        </div>
+        <div class="bill-row">
+          <div class="bill-check on" onclick="toggleCheck(this)"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5-1.4 1.4L9 19 20 8l-1.4-1.4z"/></svg></div>
+          <div class="bill-label"><div class="bill-name">Groceries</div><div class="bill-desc">BigBasket weekly</div></div>
+          <div class="bill-amount">₹6,000</div>
+        </div>
+        <div class="bill-row">
+          <div class="bill-check" onclick="toggleCheck(this)"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5-1.4 1.4L9 19 20 8l-1.4-1.4z"/></svg></div>
+          <div class="bill-label"><div class="bill-name">School fees</div><div class="bill-desc">Quarterly</div></div>
+          <div class="bill-amount">₹25,000</div>
+        </div>
+      </div>
+
+      <div style="margin-top:22px">
+        <button class="btn btn-primary btn-block" onclick="createFamily()">Create family budget</button>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Tab bar -->
+  <div class="tabbar">
+    <button class="tab active" data-tab="home" onclick="go('home')">
+      <div class="tab-icon-pill"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></div>
+      <span>Home</span>
+    </button>
+    <button class="tab" data-tab="money" onclick="go('money')">
+      <div class="tab-icon-pill"><svg viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg></div>
+      <span>Money</span>
+    </button>
+    <button class="tab" data-tab="overview" onclick="go('overview')">
+      <div class="tab-icon-pill"><svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg></div>
+      <span>Activity</span>
+    </button>
+  </div>
+</div>
+
+<!-- Payment success modal -->
+<div class="modal-bg" id="modal-pay">
+  <div class="modal">
+    <div class="modal-icon">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.2l-3.5-3.5-1.4 1.4L9 19 20 8l-1.4-1.4z"/></svg>
+    </div>
+    <h3>Payment successful</h3>
+    <p>₹4,000 paid to Mehra Electronics</p>
+    <button class="btn btn-primary btn-block" onclick="closeModal()">Done</button>
+  </div>
+</div>
+
+<!-- Scenario drawer -->
+<div class="drawer-backdrop" id="drawer-bg" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-grip"></div>
+  <h3>Test scenarios</h3>
+  <p class="sub">Tap one to set the app's state, then hand the phone to your tester.</p>
+
+  <div class="scenario-grid">
+    <button class="scenario-btn" data-sc="fresh" onclick="scenarioFresh()">
+      <span class="emoji">🆕</span>
+      <span class="label">No budget set</span>
+      <span class="state">Fresh user · ₹0 tracked</span>
+    </button>
+    <button class="scenario-btn" data-sc="healthy" onclick="scenarioHealthy()">
+      <span class="emoji">✅</span>
+      <span class="label">Healthy spend</span>
+      <span class="state">40% of ₹1.5L used</span>
+    </button>
+    <button class="scenario-btn" data-sc="80" onclick="scenario80()">
+      <span class="emoji">⚠️</span>
+      <span class="label">80% breach</span>
+      <span class="state">₹1.2L of ₹1.5L</span>
+    </button>
+    <button class="scenario-btn" data-sc="over" onclick="scenarioOver()">
+      <span class="emoji">🔴</span>
+      <span class="label">Over budget</span>
+      <span class="state">₹15k over limit</span>
+    </button>
+    <button class="scenario-btn" data-sc="family" onclick="scenarioFamily()" style="grid-column:span 2">
+      <span class="emoji">👪</span>
+      <span class="label">Family budget</span>
+      <span class="state">₹52k of ₹80k pool · 3 members</span>
+    </button>
+  </div>
+
+  <div class="drawer-note">
+    <strong>Tip:</strong> After picking "80% breach", open the Pay screen to see the payment-time warning in action.
+  </div>
+</div>
+
+<script>
+/* ================== STATE ================== */
+const state = {
+  budget: 150000,
+  spent: 60000,
+  currentScreen: 'home',
+  month: 'May 2026',
+  overviewMode: 'all',
+  hasBudget: true,
+  familyBudget: false,
+  currentScenario: 'healthy',
+  transactions: [
+    {name:'Venkatesh',   amount:1500, method:'upi',  date:'14 Apr', color:'#4285f4', letter:'V', cat:'non'},
+    {name:'Puran Sweets',amount:400,  method:'upi',  date:'8 Apr',  color:'#ea4335', letter:'P', cat:'non'},
+    {name:'BigBasket',   amount:6000, method:'upi',  date:'6 Apr',  color:'#34a853', letter:'B', cat:'mandatory'},
+    {name:'Amazon',      amount:3200, method:'cc',   date:'4 Apr',  color:'#fbbc04', letter:'A', cat:'non'},
+    {name:'Uber',        amount:280,  method:'upi',  date:'3 Apr',  color:'#000',    letter:'U', cat:'non'},
+    {name:'HDFC EMI',    amount:40000,method:'upi',  date:'3 Apr',  color:'#1a73e8', letter:'H', cat:'mandatory'},
+    {name:'Zomato',      amount:650,  method:'bnpl', date:'2 Apr',  color:'#ea4335', letter:'Z', cat:'non'},
+    {name:'Electricity', amount:2800, method:'upi',  date:'2 Apr',  color:'#fbbc04', letter:'E', cat:'mandatory'},
+    {name:'Internet',    amount:1200, method:'upi',  date:'1 Apr',  color:'#34a853', letter:'I', cat:'mandatory'},
+  ],
+  categories:[
+    {name:'EMI & Loans',   amount:40000, color:'#1a73e8', mandatory:true},
+    {name:'Groceries',     amount:6000,  color:'#34a853', mandatory:true},
+    {name:'Utilities',     amount:4000,  color:'#fbbc04', mandatory:true},
+    {name:'Food & Dining', amount:4500,  color:'#ea4335', mandatory:false},
+    {name:'Shopping',      amount:4200,  color:'#9c27b0', mandatory:false},
+    {name:'Transport',     amount:1300,  color:'#00bcd4', mandatory:false},
+  ],
+};
+
+/* ================== HELPERS ================== */
+function fmt(n){ return '₹' + n.toLocaleString('en-IN'); }
+
+/* ================== NAV ================== */
+function go(screen){
+  document.querySelectorAll('.screen-view').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+screen).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  const tabMap = {home:'home', money:'money', overview:'overview', setbudget:'money', pay:'home', bills:'home', family:'money'};
+  const activeTab = document.querySelector(`[data-tab="${tabMap[screen]||'home'}"]`);
+  if(activeTab) activeTab.classList.add('active');
+  state.currentScreen = screen;
+  renderCurrent();
+  document.getElementById('scrollable-body').scrollTo({top:0,behavior:'instant'});
+}
+
+/* ================== RENDERERS ================== */
+function renderHomeBanner(){
+  const area = document.getElementById('home-banner-area');
+  const pct = state.budget>0 ? (state.spent/state.budget)*100 : 0;
+
+  if(!state.hasBudget){
+    area.innerHTML = `
+      <div class="home-banner" onclick="go('setbudget')">
+        <div class="home-banner-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <div>
+          <h5>It's salary day 🎉</h5>
+          <p>Set a budget for ${state.month} in 30 seconds</p>
+        </div>
+      </div>`;
+  } else if(pct >= 100){
+    area.innerHTML = `
+      <div class="notif-banner red" onclick="go('overview')">
+        <div class="notif-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L1 21h22L12 2zm0 15a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm1-4h-2V8h2v5z"/></svg>
+        </div>
+        <div class="notif-text">
+          <h5>You've exceeded your budget</h5>
+          <p>${fmt(state.spent - state.budget)} over your ${state.month} budget. Tap to review.</p>
+        </div>
+      </div>`;
+  } else if(pct >= 80){
+    area.innerHTML = `
+      <div class="notif-banner" onclick="go('overview')">
+        <div class="notif-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+        </div>
+        <div class="notif-text">
+          <h5>You've hit ${Math.round(pct)}% of your budget</h5>
+          <p>${fmt(state.budget - state.spent)} left for the rest of ${state.month}. Review →</p>
+        </div>
+      </div>`;
+  } else {
+    area.innerHTML = `
+      <div class="home-banner" onclick="go('money')">
+        <div class="home-banner-icon" style="background:var(--gpay-green)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.2l-3.5-3.5-1.4 1.4L9 19 20 8l-1.4-1.4z"/></svg>
+        </div>
+        <div>
+          <h5>You're on track for ${state.month}</h5>
+          <p>${Math.round(pct)}% of budget used · ${fmt(state.budget - state.spent)} remaining</p>
+        </div>
+      </div>`;
+  }
+}
+
+function renderBudgetCard(){
+  const area = document.getElementById('budget-area');
+  if(!state.hasBudget){
+    area.innerHTML = `
+      <div class="no-budget">
+        <div class="icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="#1a73e8"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 10.9 13 11.5 13 13h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+        </div>
+        <h3>No budget set for ${state.month}</h3>
+        <p>Track spends across UPI, credit card and BNPL in one place.</p>
+        <button class="btn btn-primary" onclick="go('setbudget')">Set budget</button>
+      </div>`;
+    return;
+  }
+  const pct = Math.min((state.spent/state.budget)*100, 100);
+  const remaining = state.budget - state.spent;
+  const overBudget = remaining < 0;
+  const gradient = overBudget
+    ? 'linear-gradient(135deg,#ea4335,#d93025)'
+    : (pct >= 80 ? 'linear-gradient(135deg,#f6871f,#fbbc04)' : 'linear-gradient(135deg,#1a73e8,#4285f4,#8ab4f8)');
+
+  area.innerHTML = `
+    <div class="hero-card" style="background:${gradient}">
+      <div class="hero-top">
+        <div>
+          <div class="hero-label">Monthly budget</div>
+          <div class="hero-amount">${fmt(state.budget)}</div>
+          <div class="hero-sub">${fmt(state.spent)} spent · ${overBudget ? fmt(Math.abs(remaining)) + ' over' : fmt(remaining) + ' left'}</div>
+        </div>
+        <div class="hero-month">${state.month}</div>
+      </div>
+      <div class="progress">
+        <div class="progress-fill" style="width:${pct}%"></div>
+      </div>
+      <div class="progress-meta">
+        <span>${Math.round((state.spent/state.budget)*100)}% used</span>
+        <span>${state.familyBudget ? 'Family pool · 3 members' : 'Personal'}</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn btn-ghost" style="flex:1;font-size:13px;padding:10px" onclick="go('setbudget')">Edit budget</button>
+      <button class="btn btn-ghost" style="flex:1;font-size:13px;padding:10px" onclick="go('overview')">See overview</button>
+    </div>`;
+}
+
+function renderNotif(){
+  const area = document.getElementById('notif-area');
+  const pct = (state.spent/state.budget)*100;
+  if(state.hasBudget && pct >= 80 && pct < 100){
+    area.innerHTML = `
+      <div class="notif-banner" onclick="go('overview')">
+        <div class="notif-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+        </div>
+        <div class="notif-text">
+          <h5>Heads up — ${Math.round(pct)}% consumed</h5>
+          <p>You have ${fmt(state.budget - state.spent)} for the rest of ${state.month}. Tap to review.</p>
+        </div>
+      </div>`;
+  } else if(state.hasBudget && pct >= 100){
+    area.innerHTML = `
+      <div class="notif-banner red" onclick="go('overview')">
+        <div class="notif-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L1 21h22L12 2zm0 15a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm1-4h-2V8h2v5z"/></svg>
+        </div>
+        <div class="notif-text">
+          <h5>Budget exceeded</h5>
+          <p>${fmt(state.spent - state.budget)} over. Review what pushed you past the limit.</p>
+        </div>
+      </div>`;
+  } else { area.innerHTML = ''; }
+}
+
+function renderTransactions(targetId, limit){
+  const el = document.getElementById(targetId);
+  const list = limit ? state.transactions.slice(0, limit) : state.transactions;
+  el.innerHTML = list.map(t => `
+    <div class="tx">
+      <div class="tx-icon" style="background:${t.color}">${t.letter}</div>
+      <div class="tx-info">
+        <div class="tx-name">${t.name} <span class="tx-tag ${t.cat==='mandatory'?'tag-m':'tag-nm'}">${t.cat==='mandatory'?'MANDATORY':'DISCRETIONARY'}</span></div>
+        <div class="tx-meta">
+          <span class="tx-method ${t.method}">${t.method==='cc'?'Credit':t.method==='bnpl'?'BNPL':'UPI'}</span>
+          <span>${t.date}</span>
+        </div>
+      </div>
+      <div class="tx-amount">${fmt(t.amount)}</div>
+    </div>`).join('');
+}
+
+function renderPie(){
+  let cats = state.categories;
+  if(state.overviewMode==='mandatory') cats = cats.filter(c=>c.mandatory);
+  else if(state.overviewMode==='non') cats = cats.filter(c=>!c.mandatory);
+
+  const total = cats.reduce((s,c)=>s+c.amount,0);
+  const segEl = document.getElementById('pie-segments');
+
+  let offset = 25;
+  segEl.innerHTML = cats.map(c => {
+    const pct = (c.amount/total)*100;
+    const dash = `${pct.toFixed(2)} ${(100-pct).toFixed(2)}`;
+    const el = `<circle cx="21" cy="21" r="15.915" fill="transparent" stroke="${c.color}" stroke-width="11" stroke-dasharray="${dash}" stroke-dashoffset="${offset}" transform="rotate(-90 21 21)"/>`;
+    offset = (offset - pct + 100) % 100;
+    return el;
+  }).join('');
+
+  document.getElementById('pie-total').textContent = fmt(total);
+
+  const bd = document.getElementById('cat-breakdown');
+  bd.innerHTML = cats.map(c => {
+    const pct = Math.round((c.amount/total)*100);
+    return `
+      <div class="cat-row">
+        <span class="cat-dot" style="background:${c.color}"></span>
+        <span class="cat-name">${c.name} <span class="tx-tag ${c.mandatory?'tag-m':'tag-nm'}">${c.mandatory?'M':'NM'}</span></span>
+        <span class="cat-pct">${pct}%</span>
+        <span class="cat-amt">${fmt(c.amount)}</span>
+      </div>`;
+  }).join('');
+}
+
+function renderBillList(){
+  const defaults = [
+    {name:'Home loan EMI', desc:'HDFC · 3rd every month', amount:40000, on:true},
+    {name:'Electricity',   desc:'Tata Power',             amount:2800,  on:true},
+    {name:'Internet',      desc:'ACT Fibernet',           amount:1200,  on:true},
+    {name:'Groceries',     desc:'BigBasket weekly',       amount:6000,  on:true},
+    {name:'Netflix',       desc:'Monthly',                amount:649,   on:false},
+    {name:'Gym',           desc:'Cult.fit',               amount:1500,  on:false},
+  ];
+  document.getElementById('bill-list').innerHTML = defaults.map(b => `
+    <div class="bill-row">
+      <div class="bill-check ${b.on?'on':''}" onclick="toggleCheck(this)">
+        <svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5-1.4 1.4L9 19 20 8l-1.4-1.4z"/></svg>
+      </div>
+      <div class="bill-label">
+        <div class="bill-name">${b.name}</div>
+        <div class="bill-desc">${b.desc}</div>
+      </div>
+      <div class="bill-amount">${fmt(b.amount)}</div>
+    </div>`).join('');
+}
+
+function renderPayWarning(){
+  const area = document.getElementById('pay-warn-area');
+  const postSpent = state.spent + 4000;
+  const pct = state.hasBudget ? (postSpent/state.budget)*100 : 0;
+  const payBtn = document.getElementById('pay-btn');
+
+  if(state.hasBudget && pct >= 100){
+    area.innerHTML = `
+      <div class="budget-warn">
+        <div class="budget-warn-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L1 21h22L12 2zm1 16h-2v-2h2v2zm0-4h-2V9h2v5z"/></svg>
+        </div>
+        <div>
+          <h6>This payment exceeds your monthly budget</h6>
+          <p>You'll be ${fmt(postSpent - state.budget)} over your ${fmt(state.budget)} budget for ${state.month}.</p>
+        </div>
+      </div>`;
+    payBtn.classList.remove('btn-primary');
+    payBtn.classList.add('btn-danger');
+    payBtn.textContent = 'Pay anyway ₹4,000';
+  } else if(state.hasBudget && pct >= 80){
+    area.innerHTML = `
+      <div class="budget-warn" style="background:#fef7e0;border-color:#fbe8a0">
+        <div class="budget-warn-icon" style="background:var(--gpay-yellow)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+        </div>
+        <div>
+          <h6>After this payment, you'll be at ${Math.round(pct)}%</h6>
+          <p>Only ${fmt(state.budget - postSpent)} left for the rest of ${state.month}.</p>
+        </div>
+      </div>`;
+    payBtn.classList.add('btn-primary');
+    payBtn.classList.remove('btn-danger');
+    payBtn.textContent = 'Pay ₹4,000';
+  } else {
+    area.innerHTML = '';
+    payBtn.classList.add('btn-primary');
+    payBtn.classList.remove('btn-danger');
+    payBtn.textContent = 'Pay ₹4,000';
+  }
+}
+
+function renderCurrent(){
+  if(state.currentScreen==='home'){ renderHomeBanner(); renderTransactions('home-tx', 4); }
+  if(state.currentScreen==='money'){ renderBudgetCard(); renderNotif(); renderTransactions('money-tx'); }
+  if(state.currentScreen==='overview'){ renderPie(); }
+  if(state.currentScreen==='bills'){ renderBillList(); }
+  if(state.currentScreen==='pay'){ renderPayWarning(); }
+}
+
+/* ================== INTERACTIONS ================== */
+function setQuick(n){ document.getElementById('sb-amount').value = n.toLocaleString('en-IN'); }
+function saveBudget(){
+  const raw = document.getElementById('sb-amount').value.replace(/[^\d]/g,'');
+  const amt = parseInt(raw||'0');
+  if(!amt) return;
+  state.budget = amt;
+  state.hasBudget = true;
+  go('money');
+}
+function toggleCheck(el){ el.classList.toggle('on'); }
+function createFamily(){
+  state.familyBudget = true;
+  const raw = document.getElementById('family-amt').value.replace(/[^\d]/g,'');
+  state.budget = parseInt(raw||'80000');
+  state.spent = Math.round(state.budget * 0.35);
+  state.hasBudget = true;
+  go('money');
+}
+function confirmPay(){
+  state.spent += 4000;
+  document.getElementById('modal-pay').classList.add('on');
+}
+function closeModal(){
+  document.getElementById('modal-pay').classList.remove('on');
+  go('money');
+}
+function setOverviewMode(m){
+  state.overviewMode = m;
+  document.getElementById('tog-all').classList.toggle('on', m==='all');
+  document.getElementById('tog-m').classList.toggle('on', m==='mandatory');
+  document.getElementById('tog-nm').classList.toggle('on', m==='non');
+  renderPie();
+}
+
+/* ================== DRAWER ================== */
+function openDrawer(){
+  document.getElementById('drawer').classList.add('on');
+  document.getElementById('drawer-bg').classList.add('on');
+}
+function closeDrawer(){
+  document.getElementById('drawer').classList.remove('on');
+  document.getElementById('drawer-bg').classList.remove('on');
+}
+function markScenario(key){
+  state.currentScenario = key;
+  document.querySelectorAll('.scenario-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.sc===key);
+  });
+  closeDrawer();
+}
+
+/* ================== SCENARIOS ================== */
+function scenarioFresh(){
+  state.hasBudget = false; state.spent = 0; state.familyBudget = false;
+  markScenario('fresh'); go('home');
+}
+function scenarioHealthy(){
+  state.hasBudget = true; state.budget = 150000; state.spent = 60000; state.familyBudget = false;
+  markScenario('healthy'); go('money');
+}
+function scenario80(){
+  state.hasBudget = true; state.budget = 150000; state.spent = 120000; state.familyBudget = false;
+  markScenario('80'); go('money');
+}
+function scenarioOver(){
+  state.hasBudget = true; state.budget = 150000; state.spent = 165000; state.familyBudget = false;
+  markScenario('over'); go('money');
+}
+function scenarioFamily(){
+  state.hasBudget = true; state.familyBudget = true; state.budget = 80000; state.spent = 52000;
+  markScenario('family'); go('money');
+}
+
+/* ================== INIT ================== */
+// Mark the current scenario on load
+document.querySelector('[data-sc="healthy"]').classList.add('active');
+renderCurrent();
+renderBillList();
+</script>
+
+</body>
+</html>
