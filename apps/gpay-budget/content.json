@@ -1,0 +1,46 @@
+{
+  "title": "GPay Smart Money",
+  "subtitle": "Rethinking budgeting for India's active spenders",
+  "role": "Product Design · UX Research · Prototyping",
+  "timeline": "April – May 2026",
+  "overview": "Active spenders on Google Pay struggle with managing cash flows because their spends are spread across UPI, credit cards, and BNPL. This leads to impulse purchases and overshooting monthly budgets. Instead of forcing users into rigid budgeting, I designed a copilot-driven experience that shows users what they can actually spend — adapting in real-time as bills get paid and income arrives.",
+
+  "sections": [
+    {
+      "heading": "The Problem",
+      "body": "Users don't have a budgeting problem — they have a visibility problem. Their money is scattered across payment modes and apps, making it impossible to know what's truly available to spend at any given moment. Traditional budgeting asks users to set arbitrary limits upfront and punishes them when they fail. We flipped the model."
+    },
+    {
+      "heading": "Key Insight",
+      "body": "Instead of asking 'How much do you want to spend?' we ask 'What does your money look like after all your commitments?' This shifts the frame from discipline to awareness — and awareness changes behavior without guilt."
+    },
+    {
+      "heading": "The Solution",
+      "body": "A money copilot woven into every GPay interaction. It calculates your real spendable balance by subtracting upcoming bills and recurring essentials from your bank balance. It nudges you at payment time when a purchase would leave you stretched. And it answers natural questions like 'Can I afford that iPhone?' with personalized, data-driven advice — including which payment channel is optimal."
+    },
+    {
+      "heading": "Design Decisions",
+      "body": "1) No upfront budget required — the system works from day one using transaction history and connected billers. 2) Accuracy bar that nudges account linking by showing value gaps, not demanding data. 3) Business-aligned nudges for BNPL and credit products that only appear when contextually helpful, are always dismissible, and never occupy permanent real estate. 4) Spending guardrails as optional soft limits — the copilot advises, the user decides."
+    }
+  ],
+
+  "links": [
+    {
+      "label": "Interactive Prototype",
+      "url": "https://akash-mahali.github.io/gpay-budget-prototype/",
+      "type": "prototype"
+    },
+    {
+      "label": "Research & Problem Framing",
+      "url": "#",
+      "type": "doc"
+    },
+    {
+      "label": "Design Exploration Sketches",
+      "url": "#",
+      "type": "slides"
+    }
+  ],
+
+  "prototype_embed": "https://akash-mahali.github.io/gpay-budget-prototype/"
+}
