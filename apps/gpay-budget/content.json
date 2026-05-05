@@ -27,7 +27,7 @@
   "links": [
     {
       "label": "Interactive Prototype",
-      "url": "https://akash-mahali.github.io/gpay-budget-prototype/",
+      "url": "https://apps.ex-machina-2030.com/apps/gpay-budget/demo",
       "type": "prototype"
     },
     {
@@ -42,5 +42,5 @@
     }
   ],
 
-  "prototype_embed": "https://akash-mahali.github.io/gpay-budget-prototype/"
+  "prototype_embed": "https://apps.ex-machina-2030.com/apps/gpay-budget/demo"
 }
