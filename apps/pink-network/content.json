@@ -27,7 +27,7 @@
   "links": [
     {
       "label": "Interactive Prototype",
-      "url": "https://apps.ex-machina-2030.com/apps/pinky-network/demo",
+      "url": "https://apps.ex-machina-2030.com/apps/pink-network/demo",
       "type": "prototype"
     },
     {
@@ -42,5 +42,5 @@
     }
   ],
 
-  "prototype_embed": "https://apps.ex-machina-2030.com/apps/pinky-network/demo"
+  "prototype_embed": "https://apps.ex-machina-2030.com/apps/pink-network/demo"
 }

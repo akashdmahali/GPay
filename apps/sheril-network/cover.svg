@@ -1,13 +1,37 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="1600" height="1000">
-  <rect width="1600" height="1000" fill="#e8e8e8"/>
-  <rect x="620" y="180" width="360" height="640" rx="40" fill="#d0d0d0"/>
-  <rect x="640" y="220" width="320" height="560" rx="30" fill="#f5f5f5"/>
-  <rect x="670" y="280" width="260" height="80" rx="14" fill="#bbb"/>
-  <rect x="670" y="380" width="120" height="12" rx="3" fill="#ccc"/>
-  <rect x="670" y="400" width="180" height="12" rx="3" fill="#ddd"/>
-  <rect x="670" y="440" width="260" height="50" rx="10" fill="#e2e2e2"/>
-  <rect x="670" y="510" width="260" height="50" rx="10" fill="#e2e2e2"/>
-  <rect x="670" y="580" width="260" height="50" rx="10" fill="#e2e2e2"/>
-  <circle cx="800" cy="710" r="20" fill="#bbb"/>
-  <text x="800" y="920" text-anchor="middle" font-family="system-ui,sans-serif" font-size="28" fill="#999" font-weight="500">GPay Smart Money</text>
+  <rect width="1600" height="1000" fill="#FBF9E7"></rect>
+  <text x="212" y="122" font-family="ui-monospace,&#39;SF Mono&#39;,Menlo,monospace" font-size="21" letter-spacing="3" fill="#8A8870">PRODUCTIVITY · TASK ASSISTANT</text>
+  <circle cx="1360" cy="115" r="26" fill="none" stroke="#2E2C1A" stroke-opacity="0.55" stroke-width="2"></circle>
+  <path d="M1349,115 l8,8 l14,-16" stroke="#2E2C1A" stroke-opacity="0.7" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+
+  <defs><clipPath id="card3"><rect x="210" y="150" width="1180" height="650" rx="36"></rect></clipPath></defs>
+  <rect x="210" y="150" width="1180" height="650" rx="36" fill="#FBF9E7" stroke="#D4CFA0" stroke-width="1.5"></rect>
+
+  <g clip-path="url(#card3)" stroke="#2E2C1A" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    
+    <g stroke-width="1.2">
+      <line x1="470" y1="330" x2="800" y2="410"></line>
+      <line x1="800" y1="410" x2="1130" y2="340"></line>
+      <line x1="800" y1="410" x2="640" y2="600"></line>
+      <line x1="800" y1="410" x2="980" y2="610"></line>
+      <line x1="640" y1="600" x2="980" y2="610"></line>
+      <line x1="470" y1="330" x2="640" y2="600"></line>
+      <line x1="1130" y1="340" x2="980" y2="610"></line>
+    </g>
+    <circle cx="470" cy="330" r="12" fill="#82C8E5" stroke-width="2"></circle>
+    <circle cx="800" cy="410" r="20" fill="#FDB813" stroke-width="2.4"></circle>
+    <circle cx="1130" cy="340" r="12" fill="#FBF9E7" stroke-width="2"></circle>
+    <circle cx="640" cy="600" r="12" fill="#FBF9E7" stroke-width="2"></circle>
+    <circle cx="980" cy="610" r="14" fill="#35A46B" stroke-width="2"></circle>
+
+    
+    <g stroke-width="2">
+      <rect x="330" y="660" width="200" height="60" rx="14" fill="#F0ECC8"></rect>
+      <rect x="1060" y="440" width="200" height="60" rx="14" fill="#F0ECC8"></rect>
+    </g>
+    <path d="M360,690 h60 M360,700 h140" stroke="#D4CFA0" stroke-width="5"></path>
+    <path d="M1090,468 h60 M1090,478 h140" stroke="#D4CFA0" stroke-width="5"></path>
+  </g>
+
+  <text x="800" y="905" text-anchor="middle" font-family="&#39;DM Sans&#39;,system-ui,sans-serif" font-size="28" fill="#6f6d5f" font-weight="500">Smart Zero — Sheril</text>
 </svg>
