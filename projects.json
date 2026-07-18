@@ -38,5 +38,13 @@
     "thumbnail": "apps/telecom/cover.svg",
     "tags": ["Telecom", "Domain", "BSS"],
     "year": "2026"
+  },
+{
+    "id": "uber-driver",
+    "title": "Uber Driver Dashboard",
+    "subtitle": "Helping drivers earn more from the hours they're already online",
+    "thumbnail": "apps/uber-driver/cover.svg",
+    "tags": ["Uber", "Drivers", "Analytics"],
+    "year": "2026"
   }
 ]
