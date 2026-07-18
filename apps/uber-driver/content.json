@@ -1,0 +1,33 @@
+{
+  "title": "Uber Driver Dashboard",
+  "subtitle": "Helping drivers earn more from the hours they're already online",
+  "role": "Ride-hailing · Product · Driver Experience",
+  "timeline": "July 2026",
+  "overview": "From a dead afternoon in the wrong zone to the surge two kilometres away: a driver-facing app that turns the data Uber already has into glanceable, at-a-red-light tips. Success is measured by earnings per online hour, not hours logged, with the driver's wellbeing held as a hard constraint rather than an afterthought.",
+
+  "sections": [
+    {
+      "heading": "The Problem",
+      "body": "Drivers pick when to go online, where to sit, and which trips to take on instinct and WhatsApp-group lore. Uber already knows where demand is about to climb, how surge has moved all week, and how this driver stacks up, but almost none of it reaches the driver while it's still useful."
+    },
+    {
+      "heading": "Key Insight",
+      "body": "Earnings is a lagging metric; the win is turning it into leading, glanceable tips a driver can act on and tie straight back to money. Earnings per online hour is the North Star because it serves the driver and Uber at once: earn more from the same hours, and the driver keeps driving."
+    }
+  ],
+
+  "links": [
+    {
+      "label": "Interactive Prototype",
+      "url": "https://apps.ex-machina-2030.com/apps/uber-driver/demo",
+      "type": "prototype"
+    },
+    {
+      "label": "Supporting Document",
+      "url": "https://apps.ex-machina-2030.com/apps/uber-driver/writeup.docx",
+      "type": "doc"
+    }
+  ],
+
+  "prototype_embed": "https://apps.ex-machina-2030.com/apps/uber-driver/demo"
+}

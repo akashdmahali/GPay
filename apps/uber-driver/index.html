@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Case Study</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#111;--ink2:#555;--ink3:#888;--ink4:#bbb;
+  --line:#e0e0e0;--bg:#fafafa;--white:#fff;
+  --serif:'Instrument Serif',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);color:var(--ink);background:var(--bg);line-height:1.7;-webkit-font-smoothing:antialiased}
+
+/* layout */
+.wrap{max-width:720px;margin:0 auto;padding:0 24px}
+header{padding:32px 0 24px;border-bottom:1px solid var(--line)}
+header a{font-size:14px;color:var(--ink3);text-decoration:none;font-weight:500;letter-spacing:.3px;transition:color .2s}
+header a:hover{color:var(--ink)}
+.hero{padding:64px 0 48px}
+.hero h1{font-family:var(--serif);font-size:clamp(36px,5vw,52px);font-weight:400;line-height:1.15;letter-spacing:-.5px;margin-bottom:12px}
+.hero .sub{font-size:18px;color:var(--ink2);font-weight:400;margin-bottom:24px}
+.meta{display:flex;gap:32px;flex-wrap:wrap;font-size:13px;color:var(--ink3);padding-bottom:48px;border-bottom:1px solid var(--line)}
+.meta-item{display:flex;flex-direction:column;gap:2px}
+.meta-label{font-weight:600;text-transform:uppercase;letter-spacing:.5px;font-size:10px;color:var(--ink4)}
+
+/* content sections */
+.section{padding:48px 0;border-bottom:1px solid var(--line)}
+.section:last-of-type{border-bottom:none}
+.section h2{font-family:var(--serif);font-size:28px;font-weight:400;margin-bottom:16px;letter-spacing:-.3px}
+.section p{font-size:16px;color:var(--ink2);line-height:1.8}
+
+/* links */
+.links-section{padding:48px 0}
+.links-section h2{font-family:var(--serif);font-size:28px;font-weight:400;margin-bottom:20px}
+.link-list{display:flex;flex-direction:column;gap:12px}
+.link-card{
+  display:flex;align-items:center;gap:16px;
+  padding:18px 20px;
+  background:var(--white);
+  border:1px solid var(--line);
+  border-radius:12px;
+  text-decoration:none;color:var(--ink);
+  transition:border-color .2s,transform .15s;
+}
+.link-card:hover{border-color:var(--ink4);transform:translateY(-1px)}
+.link-icon{
+  width:40px;height:40px;border-radius:10px;
+  background:var(--ink);color:var(--white);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;font-size:16px;
+}
+.link-label{font-size:15px;font-weight:500;flex:1}
+.link-arrow{font-size:18px;color:var(--ink4)}
+
+/* prototype embed */
+.embed-section{padding:48px 0;border-top:1px solid var(--line)}
+.embed-section h2{font-family:var(--serif);font-size:28px;font-weight:400;margin-bottom:20px}
+.embed-frame{
+  width:100%;height:700px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  overflow:hidden;
+  background:var(--white);
+}
+.embed-frame iframe{width:100%;height:100%;border:none}
+
+footer{padding:32px 0;text-align:center;font-size:12px;color:var(--ink4);border-top:1px solid var(--line)}
+footer a{color:var(--ink3);text-decoration:none}
+footer a:hover{color:var(--ink)}
+
+/* loading */
+.loading{text-align:center;padding:120px 0;color:var(--ink3);font-size:14px}
+
+@media(max-width:600px){
+  .meta{gap:20px}
+  .embed-frame{height:500px;border-radius:12px}
+  .hero{padding:40px 0 32px}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <a href="../../">← Back to portfolio</a>
+  </header>
+
+  <div id="content">
+    <div class="loading">Loading case study…</div>
+  </div>
+
+  <footer>
+    <a href="../../">Akash Mahali</a> · Portfolio
+  </footer>
+</div>
+
+<script>
+async function load(){
+  try{
+    const res=await fetch('content.json');
+    const d=await res.json();
+    const el=document.getElementById('content');
+    document.title=d.title+' — Case Study';
+
+    let html=`
+      <div class="hero">
+        <h1>${d.title}</h1>
+        <div class="sub">${d.subtitle}</div>
+      </div>
+      <div class="meta">
+        <div class="meta-item"><span class="meta-label">Role</span>${d.role}</div>
+        <div class="meta-item"><span class="meta-label">Timeline</span>${d.timeline}</div>
+      </div>
+      <div class="section">
+        <h2>Overview</h2>
+        <p>${d.overview}</p>
+      </div>
+    `;
+
+    if(d.sections){
+      d.sections.forEach(s=>{
+        html+=`<div class="section"><h2>${s.heading}</h2><p>${s.body}</p></div>`;
+      });
+    }
+
+    if(d.links&&d.links.length){
+      const icons={prototype:'◎',doc:'📄',slides:'📊',sheet:'📋',link:'→'};
+      html+=`<div class="links-section"><h2>Resources</h2><div class="link-list">`;
+      d.links.forEach(l=>{
+        html+=`<a class="link-card" href="${l.url}" target="_blank" rel="noopener">
+          <div class="link-icon">${icons[l.type]||'→'}</div>
+          <div class="link-label">${l.label}</div>
+          <span class="link-arrow">↗</span>
+        </a>`;
+      });
+      html+=`</div></div>`;
+    }
+
+    if(d.prototype_embed){
+      html+=`<div class="embed-section">
+        <h2>Interactive Prototype</h2>
+        <div class="embed-frame"><iframe src="${d.prototype_embed}" loading="lazy"></iframe></div>
+      </div>`;
+    }
+
+    el.innerHTML=html;
+  }catch(e){
+    document.getElementById('content').innerHTML='<div class="loading">Could not load case study.</div>';
+  }
+}
+load();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="1600" height="1000">
+  <defs><clipPath id="card"><rect x="210" y="150" width="1180" height="650" rx="36"/></clipPath></defs>
+
+  <!-- FIXED: grey canvas -->
+  <rect width="1600" height="1000" fill="#e8e8e8"/>
+
+  <!-- SWAP PER PROJECT: eyebrow -->
+  <text x="212" y="122" font-family="ui-monospace,'SF Mono',Menlo,monospace" font-size="21" letter-spacing="3" fill="#8A8870">RIDE-HAILING · DRIVER EXPERIENCE</text>
+  <!-- FIXED: launch affordance -->
+  <circle cx="1360" cy="115" r="26" fill="none" stroke="#2E2C1A" stroke-opacity="0.55" stroke-width="2"/>
+  <path d="M1351,124 L1369,106 M1355,106 L1369,106 L1369,120" stroke="#2E2C1A" stroke-opacity="0.7" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+  <!-- FIXED template: parchment artboard (brand surface). SWAP the scene inside per project. -->
+  <rect x="210" y="150" width="1180" height="650" rx="36" fill="#FBF9E7" stroke="#D4CFA0" stroke-width="1.5"/>
+
+  <g clip-path="url(#card)" stroke="#2E2C1A" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- ground (dew, warm) -->
+    <path stroke="none" fill="#F0ECC8" d="M210,150 M210,598 C430,568 640,560 860,558 C1080,556 1262,538 1390,518 L1390,800 L210,800 Z"/>
+    <path d="M210,598 C430,568 640,560 860,558 C1080,556 1262,538 1390,518"/>
+    <path stroke="#D4CFA0" stroke-width="2" d="M250,664 C500,652 770,656 1040,636"/>
+    <path stroke="#D4CFA0" stroke-width="2" d="M300,724 C520,716 700,720 900,712"/>
+
+    <!-- birds -->
+    <path stroke-width="2" d="M980,250 q10,-8 18,0 M998,250 q10,-8 18,0"/>
+    <path stroke-width="2" d="M1054,296 q8,-6 14,0 M1068,296 q8,-6 14,0"/>
+
+    <!-- sun (signature gold) -->
+    <circle stroke="none" fill="#FEF5CC" cx="432" cy="338" r="94"/>
+    <circle fill="#FDB813" cx="432" cy="338" r="64"/>
+    <g stroke-width="2.6">
+      <line x1="432" y1="236" x2="432" y2="258"/><line x1="330" y1="338" x2="352" y2="338"/><line x1="512" y1="338" x2="534" y2="338"/>
+      <line x1="366" y1="272" x2="381" y2="287"/><line x1="498" y1="272" x2="483" y2="287"/>
+      <line x1="366" y1="404" x2="381" y2="389"/><line x1="498" y1="404" x2="483" y2="389"/>
+    </g>
+
+    <!-- distant + city buildings -->
+    <rect fill="#FBF9E7" stroke-width="2" x="900" y="508" width="34" height="54" rx="3"/>
+    <rect fill="#F0ECC8" stroke-width="2.6" x="1050" y="436" width="60" height="140" rx="4"/>
+    <rect fill="#FBF9E7" stroke-width="2.6" x="980" y="470" width="54" height="106" rx="4"/>
+    <rect fill="#FBF9E7" stroke-width="2.6" x="1118" y="486" width="48" height="90" rx="4"/>
+    <rect fill="#F0ECC8" stroke-width="2.6" x="1172" y="458" width="56" height="118" rx="4"/>
+    <rect fill="#FBF9E7" stroke-width="2.6" x="1238" y="502" width="44" height="74" rx="4"/>
+    <!-- windows -->
+    <g fill="#FEF5CC" stroke-width="1.4">
+      <rect x="1064" y="456" width="13" height="13" rx="1"/><rect x="1086" y="456" width="13" height="13" rx="1"/>
+      <rect x="1064" y="486" width="13" height="13" rx="1"/><rect x="1086" y="486" width="13" height="13" rx="1"/>
+      <rect x="1064" y="516" width="13" height="13" rx="1"/><rect x="1086" y="516" width="13" height="13" rx="1"/>
+      <rect x="994" y="488" width="12" height="12" rx="1"/><rect x="1014" y="488" width="12" height="12" rx="1"/>
+      <rect x="994" y="514" width="12" height="12" rx="1"/><rect x="1014" y="514" width="12" height="12" rx="1"/>
+      <rect x="1186" y="478" width="12" height="12" rx="1"/><rect x="1206" y="478" width="12" height="12" rx="1"/>
+      <rect x="1186" y="504" width="12" height="12" rx="1"/><rect x="1206" y="504" width="12" height="12" rx="1"/>
+    </g>
+
+    <!-- road: enters from bottom edge, recedes into the city -->
+    <path d="M486,800 C560,724 700,660 940,600"/>
+    <path d="M688,800 C742,730 838,668 992,604"/>
+    <path stroke-width="2.4" stroke-dasharray="14 18" d="M586,800 C650,727 768,664 966,602"/>
+
+    <!-- car -->
+    <g transform="translate(700,686) rotate(-11)">
+      <rect x="-32" y="-4" width="64" height="24" rx="10" fill="#FBF9E7" stroke-width="2.6"/>
+      <path d="M-16,-4 q3,-16 16,-16 h6 q11,0 14,16 z" fill="#FBF9E7" stroke-width="2.4"/>
+      <path d="M-8,-6 q2,-9 9,-9 h3 q6,0 8,9 z" fill="#82C8E5" stroke-width="1.4"/>
+      <circle cx="-15" cy="20" r="8" fill="#2E2C1A" stroke="none"/><circle cx="-15" cy="20" r="3" fill="#FBF9E7" stroke="none"/>
+      <circle cx="16" cy="20" r="8" fill="#2E2C1A" stroke="none"/><circle cx="16" cy="20" r="3" fill="#FBF9E7" stroke="none"/>
+    </g>
+
+    <!-- surge pin (sky) -->
+    <path d="M560,566 c-13,-22 -22,-32 -22,-48 a22,22 0 1 1 44,0 c0,16 -9,26 -22,48 z" fill="#82C8E5" stroke-width="3"/>
+    <circle cx="560" cy="518" r="8" fill="#FBF9E7" stroke-width="2"/>
+
+    <!-- hotspot pin (green, focal) — no shadow -->
+    <circle cx="1112" cy="556" r="32" fill="none" stroke="#2E2C1A" stroke-opacity="0.45" stroke-width="1.6" stroke-dasharray="3 9"/>
+    <path d="M1112,556 c-17,-28 -30,-42 -30,-62 a30,30 0 1 1 60,0 c0,20 -13,34 -30,62 z" fill="#35A46B" stroke-width="3.2"/>
+    <circle cx="1112" cy="494" r="12" fill="#FBF9E7" stroke-width="2.4"/>
+
+    <!-- floating tip card -->
+    <g>
+      <rect x="1150" y="238" width="152" height="66" rx="16" fill="#FBF9E7" stroke-width="2.6"/>
+      <path d="M1178,286 c-7,-12 -12,-17 -12,-25 a12,12 0 1 1 24,0 c0,8 -5,13 -12,25 z" fill="#35A46B" stroke-width="1.8"/>
+      <circle cx="1178" cy="261" r="4.4" fill="#FBF9E7" stroke-width="1.4"/>
+      <rect x="1206" y="258" width="80" height="9" rx="4" fill="#D4CFA0" stroke="none"/>
+      <rect x="1206" y="276" width="54" height="8" rx="4" fill="#EAE3C6" stroke="none"/>
+    </g>
+  </g>
+
+  <!-- FIXED: bottom label -->
+  <text x="800" y="905" text-anchor="middle" font-family="'DM Sans',system-ui,sans-serif" font-size="28" fill="#6f6d5f" font-weight="500">Uber Driver Dashboard</text>
+</svg>

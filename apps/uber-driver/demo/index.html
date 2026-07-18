@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Driver Earnings Dashboard — Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ph-canvas:#F3F4F6; --ph-surf:#FFFFFF; --ph-line:#E6E8EC; --ph-line2:#EEF0F3;
+    --ph-text:#0B0B0C; --ph-mut:#6A7280; --ph-mut2:#9AA1AC;
+    --green:#05A357; --green-bg:#E4F6ED;
+    --purple:#6D4AFF; --purple-bg:#EEEAFE;
+    --red:#E23B2E; --red-bg:#FCEAE8;
+    --blue:#2F6BF6; --blue-bg:#E7F0FE;
+    --co-bg:#EBEEF2; --co-panel:#FFFFFF; --co-ink:#0C1826; --co-mut:#6A7787;
+    --co-line:#D7DEE6; --tag:#6D4AFF; --tag-dim:#EEEAFE;
+    --san:'Inter',system-ui,sans-serif; --dev:'Noto Sans Devanagari','Inter',sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:var(--san);background:var(--co-bg);color:var(--co-ink);overflow:hidden}
+  .app{display:flex;height:100vh;width:100%}
+
+  .stage{flex:1 1 46%;min-width:0;background:linear-gradient(160deg,#EDEFF2,#DCE0E6);
+    display:flex;align-items:center;justify-content:center;padding:28px;position:relative}
+  .stage-label{position:absolute;top:20px;left:24px;font-family:var(--mono);font-size:11px;
+    letter-spacing:.14em;color:#8A93A0;text-transform:uppercase}
+  .phone{width:372px;height:788px;max-height:calc(100vh - 48px);background:var(--ph-canvas);
+    border-radius:44px;border:1px solid #C9CED5;box-shadow:0 40px 90px -30px rgba(20,26,34,.45),0 0 0 11px #fff,0 0 0 12px #D0D5DC;
+    position:relative;overflow:hidden;display:flex;flex-direction:column;font-family:var(--dev)}
+  .notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:104px;height:22px;
+    background:#0B0B0C;border-radius:0 0 16px 16px;z-index:60}
+
+  .os-bar{display:flex;align-items:center;justify-content:space-between;padding:7px 22px 3px;
+    font-family:var(--san);font-size:12px;font-weight:600;color:var(--ph-text)}
+  .os-bar .r{display:flex;align-items:center;gap:5px}
+  .os-bar svg{display:block}
+
+  .app-bar{display:flex;align-items:center;gap:10px;padding:6px 16px 10px;background:var(--ph-canvas)}
+  .burger{width:20px;height:14px;position:relative}
+  .burger span{position:absolute;left:0;width:100%;height:2px;background:var(--ph-text);border-radius:2px}
+  .burger span:nth-child(1){top:0}.burger span:nth-child(2){top:6px}.burger span:nth-child(3){top:12px}
+  .wordmark{font-family:var(--san);font-weight:800;font-size:19px;letter-spacing:-.5px;color:var(--ph-text)}
+  .app-bar .spacer{flex:1}
+  .toggle{display:inline-flex;align-items:center;gap:7px;background:var(--green-bg);color:var(--green);
+    padding:5px 11px;border-radius:999px;font-family:var(--san);font-weight:700;font-size:12px}
+  .toggle .dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(5,163,87,.45)}70%{box-shadow:0 0 0 6px rgba(5,163,87,0)}100%{box-shadow:0 0 0 0 rgba(5,163,87,0)}}
+  .bell{width:22px;height:22px;color:var(--ph-text)}
+
+  .p-body{flex:1;overflow-y:auto;padding:4px 16px 18px;scrollbar-width:none;background:var(--ph-canvas)}
+  .p-body::-webkit-scrollbar{display:none}
+
+  .hero{background:var(--ph-surf);border:1px solid var(--ph-line);border-radius:22px;padding:20px;box-shadow:0 1px 2px rgba(16,24,40,.04)}
+  .hero-lbl{color:var(--ph-mut);font-size:13px;font-weight:500}
+  .hero-amt{font-family:var(--san);font-weight:800;font-size:44px;letter-spacing:-1.5px;line-height:1.05;margin-top:3px;color:var(--ph-text);font-variant-numeric:tabular-nums}
+  .hero-sub{display:flex;align-items:center;gap:7px;margin-top:9px;font-size:12.5px;color:var(--ph-mut)}
+  .hero-sub b{color:var(--ph-text)}
+  .pace{display:inline-flex;align-items:center;gap:4px;font-weight:700;font-family:var(--san);padding:2px 8px;border-radius:7px}
+  .pace.up{color:var(--green);background:var(--green-bg)} .pace.down{color:#B7791F;background:#FBF1DD}
+
+  .stat-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:12px}
+  .stat{background:var(--ph-surf);border:1px solid var(--ph-line);border-radius:16px;padding:12px 13px;box-shadow:0 1px 2px rgba(16,24,40,.03)}
+  .stat .v{font-family:var(--san);font-weight:700;font-size:20px;color:var(--ph-text);font-variant-numeric:tabular-nums}
+  .stat .k{color:var(--ph-mut);font-size:11.5px;margin-top:2px}
+  .stat.warn{border-color:#F3B4AE;background:var(--red-bg)} .stat.warn .v{color:var(--red)}
+
+  .section-h{color:var(--ph-mut2);font-size:11.5px;font-weight:700;margin:20px 4px 9px;font-family:var(--san);text-transform:uppercase;letter-spacing:.08em}
+  .calm{background:var(--ph-surf);border:1px solid var(--ph-line);border-left:3px solid var(--green);border-radius:14px;padding:13px 15px;color:var(--ph-text);font-size:13.5px;display:flex;gap:10px;align-items:flex-start;line-height:1.5}
+  .calm span:first-child{font-size:16px}
+
+  .tabbar{display:flex;background:var(--ph-surf);border-top:1px solid var(--ph-line);padding:8px 6px}
+  .tab{flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 0;color:var(--ph-mut2);font-family:var(--dev);font-size:10.5px;font-weight:500}
+  .tab svg{width:23px;height:23px}
+  .tab.active{color:var(--ph-text)} .tab.active svg{color:var(--purple)}
+
+  .sheet-wrap{position:absolute;inset:0;z-index:50;display:none;align-items:flex-end;background:rgba(11,13,16,.42)}
+  .sheet-wrap.show{display:flex;animation:fade .2s ease}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .sheet{width:100%;background:var(--ph-surf);border-top-left-radius:26px;border-top-right-radius:26px;padding:8px 18px 24px;animation:slideup .28s cubic-bezier(.2,.8,.2,1);box-shadow:0 -12px 40px rgba(16,24,40,.18)}
+  @keyframes slideup{from{transform:translateY(100%)}to{transform:translateY(0)}}
+  .grip{width:38px;height:4px;border-radius:2px;background:#DADFE5;margin:6px auto 14px}
+  .tip-eyebrow{font-family:var(--san);font-weight:700;font-size:11.5px;letter-spacing:.03em;display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px}
+  .eb-green{background:var(--green-bg);color:var(--green)} .eb-purple{background:var(--purple-bg);color:var(--purple)}
+  .eb-blue{background:var(--blue-bg);color:var(--blue)} .eb-mut{background:#EFF1F4;color:var(--ph-mut)} .eb-red{background:var(--red-bg);color:var(--red)}
+  .tip-title{font-weight:700;font-size:20px;margin:13px 0 6px;line-height:1.3;color:var(--ph-text)}
+  .tip-body{color:var(--ph-mut);font-size:14px;line-height:1.55}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}
+  .chip{background:var(--ph-canvas);border:1px solid var(--ph-line);border-radius:10px;padding:7px 11px;font-size:12.5px;color:var(--ph-text);display:inline-flex;gap:6px;align-items:center;font-family:var(--san);font-weight:600}
+  .cta{width:100%;margin-top:16px;padding:15px;border:none;border-radius:15px;background:var(--green);color:#fff;font-weight:700;font-size:15.5px;font-family:var(--dev);cursor:pointer;transition:transform .1s,filter .15s}
+  .cta:active{transform:scale(.98)} .cta:hover{filter:brightness(.96)}
+  .cta.purple{background:var(--purple)} .cta.red{background:var(--red)}
+  .cta.ghost{background:var(--ph-surf);color:var(--ph-mut);border:1px solid var(--ph-line);font-weight:600;margin-top:8px}
+  .cta.ghost:hover{filter:none;background:var(--ph-canvas)}
+
+  .bmet{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-top:14px}
+  .bm{background:var(--ph-canvas);border:1px solid var(--ph-line);border-radius:14px;padding:11px 10px;text-align:center}
+  .bm .bv{font-family:var(--san);font-weight:700;font-size:18px;color:var(--ph-text)}
+  .bm .bk{font-size:11px;color:var(--ph-mut);margin-top:3px}
+  .bm.bad{border-color:#F3B4AE;background:var(--red-bg)} .bm.bad .bv{color:var(--red)}
+
+  .mapbox{margin-top:14px;border-radius:16px;overflow:hidden;border:1px solid var(--ph-line)}
+
+  .aha-wrap{position:absolute;inset:0;z-index:70;display:none;align-items:center;justify-content:center;padding:22px;background:rgba(11,13,16,.5)}
+  .aha-wrap.show{display:flex;animation:fade .25s ease}
+  .aha{width:100%;background:var(--ph-surf);border-radius:24px;padding:26px 22px;text-align:center;animation:pop .35s cubic-bezier(.2,.9,.3,1.2);box-shadow:0 20px 60px rgba(16,24,40,.3);position:relative;overflow:hidden}
+  .aha:before{content:"";position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,var(--green),var(--purple))}
+  @keyframes pop{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+  .aha-emoji{font-size:34px}
+  .aha-h{font-weight:800;font-size:22px;margin:4px 0 2px;color:var(--ph-text)}
+  .aha-amt{font-family:var(--san);font-weight:800;font-size:42px;color:var(--green);margin:8px 0 4px;font-variant-numeric:tabular-nums;letter-spacing:-1px}
+  .aha-link{display:flex;align-items:center;justify-content:center;gap:10px;margin:16px 0 6px;flex-wrap:wrap}
+  .aha-node{background:var(--green-bg);border:1px solid #BEE7D0;border-radius:11px;padding:8px 12px;font-size:13px;color:#0A6E3D;font-weight:600}
+  .aha-node.p{background:var(--purple-bg);border-color:#D6CBFB;color:#4A2FC0}
+  .aha-arrow{color:var(--ph-mut2);font-size:20px;font-weight:700}
+  .aha-delta{color:var(--ph-mut);font-size:14px;line-height:1.5} .aha-delta b{color:var(--green)}
+  .spark{position:absolute;width:7px;height:7px;border-radius:50%;opacity:0}
+
+  .console{flex:1 1 54%;min-width:380px;max-width:640px;background:var(--co-bg);border-left:1px solid var(--co-line);height:100vh;overflow-y:auto;padding:26px 26px 40px}
+  .co-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--tag);text-transform:uppercase}
+  .co-h1{font-size:22px;font-weight:700;margin:6px 0 4px;letter-spacing:-.3px}
+  .co-lede{color:var(--co-mut);font-size:13.5px;line-height:1.5;max-width:52ch}
+  .card{background:var(--co-panel);border:1px solid var(--co-line);border-radius:16px;padding:16px 18px;margin-top:16px}
+  .card-h{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;color:var(--co-mut);text-transform:uppercase;margin-bottom:12px}
+  .clock-row{display:flex;align-items:center;gap:16px}
+  .clock-time{font-family:var(--san);font-weight:700;font-size:30px;font-variant-numeric:tabular-nums;letter-spacing:-.5px}
+  .clock-meta{display:flex;flex-direction:column;gap:2px;font-size:12px;color:var(--co-mut)}
+  .clock-meta b{color:var(--co-ink);font-size:13px;font-weight:600}
+  .clk-btns{margin-left:auto;display:flex;gap:8px}
+  .btn{border:1px solid var(--co-line);background:#fff;border-radius:10px;padding:9px 14px;font-family:var(--san);font-weight:600;font-size:13px;cursor:pointer;color:var(--co-ink);transition:.12s}
+  .btn:hover{border-color:#B9C4D0} .btn.primary{background:var(--co-ink);color:#fff;border-color:var(--co-ink)}
+  .btn:focus-visible{outline:2px solid var(--tag);outline-offset:2px}
+  .pace-bar{margin-top:14px;height:8px;border-radius:6px;background:#E4E9EF;overflow:hidden}
+  .pace-fill{height:100%;background:var(--green);width:60%;transition:width .4s,background .3s}
+  .pace-cap{display:flex;justify-content:space-between;margin-top:6px;font-size:11.5px;color:var(--co-mut);font-family:var(--san)}
+  .pace-cap b{font-variant-numeric:tabular-nums}
+  .flow{display:flex;align-items:center;gap:0}
+  .fstage{flex:1;text-align:center;position:relative;font-size:10.5px;font-weight:600;color:#AAB4BF;font-family:var(--san);padding:8px 2px;z-index:1}
+  .fstage .fdot{width:12px;height:12px;border-radius:50%;background:#D3DAE2;margin:0 auto 6px;transition:.25s;position:relative;z-index:1}
+  .fstage.on{color:var(--co-ink)} .fstage.on .fdot{background:var(--tag);box-shadow:0 0 0 4px var(--tag-dim)}
+  .fstage:not(:last-child):after{content:"";position:absolute;top:14px;left:50%;width:100%;height:2px;background:#DCE2E9;z-index:0}
+  .fstage.done:not(:last-child):after{background:var(--tag)}
+  .scn{border:1px solid var(--co-line);border-radius:14px;margin-top:10px;overflow:hidden;background:#fff}
+  .scn-btn{width:100%;text-align:left;border:none;background:#fff;padding:14px 16px;cursor:pointer;display:flex;gap:14px;align-items:flex-start;transition:.12s}
+  .scn-btn:hover{background:#F7F9FB} .scn-btn:focus-visible{outline:2px solid var(--tag);outline-offset:-2px}
+  .scn.active{border-color:var(--tag);box-shadow:0 0 0 3px var(--tag-dim)}
+  .scn-num{font-family:var(--mono);font-size:12px;color:var(--co-mut);padding-top:2px;min-width:18px}
+  .scn-main{flex:1}
+  .scn-tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:var(--tag);text-transform:uppercase;background:var(--tag-dim);display:inline-block;padding:2px 7px;border-radius:5px;margin-bottom:6px}
+  .scn-title{font-weight:600;font-size:14.5px;color:var(--co-ink)}
+  .scn-why{font-size:12.5px;color:var(--co-mut);margin-top:3px;line-height:1.45}
+  .annot{background:#0C1826;color:#D6E0EC;border-radius:14px;padding:16px 18px;margin-top:16px;font-size:13px;line-height:1.6}
+  .annot .an-tag{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:#B3A2F5;text-transform:uppercase}
+  .annot .an-h{font-weight:600;font-size:14.5px;margin:6px 0 6px;color:#fff}
+  .annot em{color:#8FE9BC;font-style:normal;font-weight:600}
+  .footnote{margin-top:16px;border:1px dashed var(--co-line);border-radius:12px;padding:14px 16px;font-size:12.5px;color:var(--co-mut);line-height:1.6}
+  .footnote b{color:var(--co-ink)}
+  @media (max-width:860px){
+    .app{flex-direction:column;height:auto;overflow:auto}body{overflow:auto}
+    .stage{padding:20px;flex-basis:auto}.console{max-width:none;height:auto;border-left:none;border-top:1px solid var(--co-line)}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="stage">
+    <div class="stage-label">Driver app · Hindi · glanceable</div>
+    <div class="phone" id="phone">
+      <div class="notch"></div>
+      <div class="os-bar">
+        <span id="clockPhone">3:15</span>
+        <span class="r">
+          <svg width="17" height="11" viewBox="0 0 17 11" fill="none"><path d="M1 8.5C3.5 3 13.5 3 16 8.5" stroke="#0B0B0C" stroke-width="1.3" stroke-linecap="round"/><circle cx="8.5" cy="8.5" r="1.4" fill="#0B0B0C"/></svg>
+          <svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x=".6" y=".6" width="18" height="9.8" rx="2.4" stroke="#0B0B0C" stroke-width="1.1"/><rect x="2" y="2" width="13" height="7" rx="1.3" fill="#0B0B0C"/><rect x="20" y="3.5" width="1.6" height="4" rx=".8" fill="#0B0B0C"/></svg>
+        </span>
+      </div>
+      <div class="app-bar">
+        <div class="burger" aria-hidden="true"><span></span><span></span><span></span></div>
+        <span class="wordmark">Uber</span>
+        <span class="spacer"></span>
+        <span class="toggle"><span class="dot"></span>ऑनलाइन</span>
+        <svg class="bell" viewBox="0 0 24 24" fill="none"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+
+      <div class="p-body">
+        <div class="hero">
+          <div class="hero-lbl">आज की कमाई</div>
+          <div class="hero-amt" id="earnAmt">₹1,480</div>
+          <div class="hero-sub">
+            <span class="pace down" id="paceTag">▼ औसत से नीचे</span>
+            <span>· 7 दिन का औसत <b id="avgTxt">₹2,210</b> तक</span>
+          </div>
+        </div>
+        <div class="stat-row">
+          <div class="stat"><div class="v" id="ridesV">9</div><div class="k">आज की राइड्स</div></div>
+          <div class="stat"><div class="v" id="rateV">4.82</div><div class="k">रेटिंग</div></div>
+          <div class="stat" id="hrsStat"><div class="v" id="hrsV">6.5</div><div class="k">ऑनलाइन घंटे</div></div>
+        </div>
+        <div class="section-h">सुझाव</div>
+        <div class="calm" id="calmBox">
+          <span>💡</span>
+          <span>शाम के पीक से पहले कोरमंगला के पास बने रहें — वहाँ जल्दी राइड मिलने की उम्मीद है।</span>
+        </div>
+      </div>
+
+      <nav class="tabbar">
+        <button class="tab active"><svg viewBox="0 0 24 24" fill="none"><path d="M3 10.5L12 3l9 7.5M5 9.5V20h5v-6h4v6h5V9.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>होम</button>
+        <button class="tab"><svg viewBox="0 0 24 24" fill="none"><path d="M4 19V10M9.3 19V5M14.6 19v-6M20 19V8" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>कमाई</button>
+        <button class="tab"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><path d="M15.5 8.5l-2 5-5 2 2-5 5-2z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>इनसाइट्स</button>
+        <button class="tab"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8.5" r="3.5" stroke="currentColor" stroke-width="1.7"/><path d="M5 20c.8-3.5 3.7-5 7-5s6.2 1.5 7 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>खाता</button>
+      </nav>
+
+      <div class="sheet-wrap" id="sheetWrap"><div class="sheet" id="sheet"></div></div>
+      <div class="aha-wrap" id="ahaWrap"><div class="aha" id="aha"></div></div>
+    </div>
+  </div>
+
+  <div class="console">
+    <div class="co-eyebrow">Simulation Console</div>
+    <h1 class="co-h1">Driver Earnings Dashboard</h1>
+    <p class="co-lede">Trigger a scenario to see how the driver app responds. Each one maps to a specific argument in the supporting document. The phone speaks Hindi; this panel is for you.</p>
+
+    <div class="card">
+      <div class="card-h">Shift clock</div>
+      <div class="clock-row">
+        <div class="clock-time" id="clockBig">3:15 PM</div>
+        <div class="clock-meta"><span>Hours online <b id="hrsConsole">6.5</b></span><span>Today <b id="earnConsole">₹1,480</b></span></div>
+        <div class="clk-btns"><button class="btn primary" id="playBtn">▶ Play</button><button class="btn" id="resetBtn">Reset</button></div>
+      </div>
+      <div class="pace-bar"><div class="pace-fill" id="paceFill"></div></div>
+      <div class="pace-cap"><span>Pace this shift <b id="paceNow">₹228/hr</b></span><span>7-day avg <b>₹340/hr</b></span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-h">Activation loop</div>
+      <div class="flow" id="flow">
+        <div class="fstage" data-s="0"><div class="fdot"></div>Slow shift</div>
+        <div class="fstage" data-s="1"><div class="fdot"></div>Reason</div>
+        <div class="fstage" data-s="2"><div class="fdot"></div>Tip</div>
+        <div class="fstage" data-s="3"><div class="fdot"></div>+ Earnings</div>
+        <div class="fstage" data-s="4"><div class="fdot"></div>Activated</div>
+      </div>
+    </div>
+
+    <div class="card"><div class="card-h">Scenarios</div><div id="scnList"></div></div>
+
+    <div class="annot" id="annot">
+      <div class="an-tag">What this proves</div>
+      <div class="an-h">Pick a scenario to begin</div>
+      <div id="annBody">Each scenario demonstrates one metric or safeguard from the supporting document, in the driver's own context.</div>
+    </div>
+
+    <div class="footnote"><b>Two deliberate choices, visible on request.</b> The North Star (earnings per online hour) is the app's internal compass — never shown to the driver as a target to chase, only surfaced as tips and as the realised payoff. And there is no peer-earnings leaderboard: the only benchmark is the driver against their own recent shifts.</div>
+  </div>
+</div>
+
+<script>
+const inr = n => '₹' + Math.round(n).toLocaleString('en-IN');
+const fmtTime = m => { let h=Math.floor(m/60)%24, mm=m%60, ap=h<12?'AM':'PM', hh=h%12||12; return hh+':'+String(mm).padStart(2,'0')+' '+ap; };
+const fmtOS = m => { let h=Math.floor(m/60)%24, mm=m%60, hh=h%12||12; return hh+':'+String(mm).padStart(2,'0'); };
+
+const BASE = { time:915, hrs:6.5, earn:1480, rides:9, rating:4.82, accept:94, cancel:5, avgHr:340, ceiling:10 };
+let S = {...BASE, running:false, scenario:null };
+let timer=null;
+
+function mapSVG(target, color){
+  const zones={'कोरमंगला':[132,70],'इंदिरानगर':[236,58],'एमजी रोड':[196,118],'व्हाइटफील्ड':[292,150]};
+  const driver=[70,150]; let blobs='';
+  for(const [name,[x,y]] of Object.entries(zones)){
+    const hot=name===target;
+    blobs+=`<circle cx="${x}" cy="${y}" r="${hot?26:14}" fill="${hot?color:'#DDE2E8'}" opacity="${hot?0.22:0.85}"/>`+
+      (hot?`<circle cx="${x}" cy="${y}" r="26" fill="none" stroke="${color}" stroke-width="1.5" opacity=".75"><animate attributeName="r" values="18;30;18" dur="2.4s" repeatCount="indefinite"/><animate attributeName="opacity" values=".75;0;.75" dur="2.4s" repeatCount="indefinite"/></circle>`:'')+
+      `<circle cx="${x}" cy="${y}" r="4" fill="${hot?color:'#AEB6C0'}"/>`+
+      `<text x="${x}" y="${y+(y>120?-22:24)}" fill="${hot?color:'#8A93A0'}" font-size="10" font-family="Noto Sans Devanagari" text-anchor="middle" font-weight="${hot?700:500}">${name}</text>`;
+  }
+  const t=zones[target]||driver;
+  return `<svg viewBox="0 0 372 210" width="100%" height="150" style="display:block">
+    <defs><pattern id="g" width="26" height="26" patternUnits="userSpaceOnUse"><path d="M26 0H0V26" fill="none" stroke="#E7EAEE" stroke-width="1"/></pattern></defs>
+    <rect width="372" height="210" fill="#F5F7F9"/><rect width="372" height="210" fill="url(#g)"/>
+    <line x1="${driver[0]}" y1="${driver[1]}" x2="${t[0]}" y2="${t[1]}" stroke="${color}" stroke-width="2" stroke-dasharray="4 4" opacity=".65"/>
+    ${blobs}
+    <g><circle cx="${driver[0]}" cy="${driver[1]}" r="7" fill="#0B0B0C"/><circle cx="${driver[0]}" cy="${driver[1]}" r="3" fill="#fff"/>
+    <text x="${driver[0]}" y="${driver[1]+22}" fill="#5A626C" font-size="9.5" font-family="Noto Sans Devanagari" text-anchor="middle">आप यहाँ</text></g></svg>`;
+}
+
+const SCN = {
+  hotspot:{ n:'01', tag:'Secondary · Hotspot', title:'Slow shift → cold zone',
+    why:'Driver is parked where rides are thin. Dashboard points to a live hotspot.',
+    ctx:{time:915,hrs:6.5,earn:1480,rides:9}, flow:2, aha:true,
+    annTag:'Activation · Hotspot', annH:'Idle time is the leak',
+    ann:'A slow afternoon here is a <em>bad pick of zone</em>, not bad luck. The tip is a map, not a sentence — the driver sees where to move at a glance and acts at a red light. Acting closes the loop and the <em>aha</em> fires.',
+    sheet:()=>`<div class="tip-eyebrow eb-green">● ज़्यादा राइड्स पास में</div>
+      <div class="tip-title">कोरमंगला में अभी ज़्यादा माँग</div>
+      <div class="tip-body">आप जहाँ हैं वहाँ राइड्स कम हैं। 2.5 किमी दूर कोरमंगला में अभी बहुत सवारियाँ हैं।</div>
+      <div class="mapbox">${mapSVG('कोरमंगला','#05A357')}</div>
+      <div class="chips"><span class="chip">🕒 इंतज़ार ~2 मिनट</span><span class="chip">📈 माँग बहुत ज़्यादा</span></div>
+      <button class="cta" onclick="act('hotspot')">कोरमंगला चलें</button>
+      <button class="cta ghost" onclick="closeSheet()">अभी नहीं</button>`,
+    ahaData:{action:'कोरमंगला गए',hourEarn:330,prev:150,line:'2.5 किमी की छोटी दूरी, 3 राइड्स एक घंटे में'} },
+  surge:{ n:'02', tag:'Secondary · Surge', title:'Slow shift → missed surge',
+    why:'A surge is live nearby and the driver can\'t see it. Dashboard surfaces the upside in rupees.',
+    ctx:{time:1170,hrs:8,earn:2360,rides:14}, flow:2, aha:true,
+    annTag:'Activation · Surge', annH:'Chase surge before it\'s gone',
+    ann:'Drivers usually reach surge <em>after</em> it fades. The alert shows the multiplier and a concrete rupee range, not a vague nudge. The <em>aha</em> attributes the fatter hour to the surge zone the driver chose to serve.',
+    sheet:()=>`<div class="tip-eyebrow eb-purple">⚡ सर्ज ज़ोन — ज़्यादा कमाई</div>
+      <div class="tip-title">इंदिरानगर में 1.8x सर्ज</div>
+      <div class="tip-body">इंदिरानगर में अभी ज़्यादा माँग है। हर राइड पर सामान्य से ₹50–200 ज़्यादा कमाएँ।</div>
+      <div class="mapbox">${mapSVG('इंदिरानगर','#6D4AFF')}</div>
+      <div class="chips"><span class="chip">⚡ सर्ज <b style="color:#6D4AFF;margin-left:2px">1.8x</b></span><span class="chip">💰 <b style="color:#6D4AFF;margin-left:2px">₹50–200</b>/राइड</span><span class="chip">📍 1.9 किमी दूर</span></div>
+      <button class="cta purple" onclick="act('surge')">सर्ज ज़ोन जाएँ</button>
+      <button class="cta ghost" onclick="closeSheet()">अभी नहीं</button>`,
+    ahaData:{action:'सर्ज ज़ोन गए',hourEarn:410,prev:210,line:'2 सर्ज राइड्स, 1.8x दर पर',purple:true} },
+  timing:{ n:'03', tag:'Secondary · Shift timing', title:'Slow shift → wrong timing',
+    why:'The driver is online during a lull. Dashboard forecasts tonight\'s event demand.',
+    ctx:{time:900,hrs:6.2,earn:1420,rides:8}, flow:2, aha:false,
+    annTag:'Activation · Shift timing', annH:'When to drive, not just where',
+    ann:'The third lever is <em>when</em> the driver is online. This is a forecast, so there is no instant payoff — instead it reshapes the next shift toward a high-demand window.',
+    sheet:()=>`<div class="tip-eyebrow eb-blue">📅 आज रात ज़्यादा माँग</div>
+      <div class="tip-title">रात 10 बजे के बाद माँग बढ़ेगी</div>
+      <div class="tip-body">चिन्नास्वामी स्टेडियम में आज क्रिकेट मैच है। मैच के बाद कोरमंगला–एमजी रोड में सवारियाँ बहुत बढ़ेंगी।</div>
+      <div class="chips"><span class="chip">🏟️ मैच ख़त्म ~10:00 PM</span><span class="chip">📈 अनुमानित माँग: बहुत ज़्यादा</span></div>
+      <button class="cta" onclick="closeSheet()">ठीक है, प्लान कर लिया</button>` },
+  lowdemand:{ n:'04', tag:'Safeguard · Attribution honesty', title:'Slow shift → city-wide low demand',
+    why:'The shift is slow but it is NOT the driver\'s fault. Dashboard suppresses the blame.',
+    ctx:{time:840,hrs:5.5,earn:1180,rides:7}, flow:1, aha:false,
+    annTag:'False-positive guard', annH:'Don\'t blame the driver',
+    ann:'The safeguard that protects trust. If the whole city is quiet, telling the driver "you chose badly" is a lie they\'ll act on and lose faith in. The system detects the city-wide dip and <em>withholds</em> the move-tip. The activation loop deliberately stops at <em>Reason</em> — no false tip is fired.',
+    sheet:()=>`<div class="tip-eyebrow eb-mut">◐ शहर में माँग कम</div>
+      <div class="tip-title">आज पूरे बेंगलुरु में सवारियाँ कम हैं</div>
+      <div class="tip-body">यह आपकी जगह या समय की वजह से नहीं है। अभी पूरे शहर में माँग धीमी है — ज़ोन बदलने से भी ख़ास फ़र्क़ नहीं पड़ेगा। ~45 मिनट में माँग बढ़ने की उम्मीद है।</div>
+      <div class="chips"><span class="chip">🌆 शहर-भर की माँग: कम</span><span class="chip">⏳ सुधार ~3:45 PM</span></div>
+      <button class="cta ghost" onclick="closeSheet()">समझ गया</button>` },
+  behaviour:{ n:'05', tag:'Guardrail · Rider experience', title:'Low acceptance / cancels / rating',
+    why:'Poor behaviour quietly chokes ride offers. Dashboard makes the hidden link visible.',
+    ctx:{time:960,hrs:7,earn:1650,rides:10,accept:68,cancel:21,rating:4.5}, flow:-1, aha:false,
+    annTag:'Behaviour-change loop', annH:'The invisible tax on earnings',
+    ann:'Cancellations and a sliding rating silently reduce how many trips reach the driver. This surfaces acceptance, cancellation and the 7-day rating with the causal line — a nudge, <em>not</em> a supply-cutting punishment that would push them to a competitor.',
+    sheet:()=>`<div class="tip-eyebrow eb-red">⚠ ध्यान दें</div>
+      <div class="tip-title">कम राइड्स मिलने की वजह</div>
+      <div class="tip-body">क्या आप जानते हैं? राइड कम स्वीकार करने, ज़्यादा रद्द करने या रेटिंग गिरने से आपको कम राइड्स ऑफ़र होती हैं।</div>
+      <div class="bmet"><div class="bm bad"><div class="bv">68%</div><div class="bk">स्वीकृति दर</div></div>
+        <div class="bm bad"><div class="bv">21%</div><div class="bk">रद्द दर</div></div>
+        <div class="bm bad"><div class="bv">4.5 ▼</div><div class="bk">7-दिन रेटिंग</div></div></div>
+      <div class="tip-body" style="margin-top:12px;font-size:13px">ज़्यादा राइड्स स्वीकार करने और कम रद्द करने से आपको और राइड्स मिलेंगी।</div>
+      <button class="cta" onclick="closeSheet()">समझ गया, सुधारूँगा</button>` },
+  guardrail:{ n:'06', tag:'Guardrail · Wellbeing', title:'Cross the hours ceiling',
+    why:'Driver has passed their personal safe-hours limit. Dashboard advises rest — advisory, not enforced.',
+    ctx:{time:1305,hrs:10.2,earn:3480,rides:19}, flow:-1, aha:false,
+    annTag:'Wellbeing guardrail', annH:'A line the driver can still cross',
+    ann:'The ceiling is personalised from the driver\'s own history, not a flat number. Past it, hours turn red with a rest nudge. It is <em>advisory by design</em>: the app never withholds rides to force a stop. Autonomy stays with the driver; the app only makes the cost legible.',
+    sheet:()=>`<div class="tip-eyebrow eb-red">🛑 आराम का समय</div>
+      <div class="tip-title">आप आज 10 घंटे से ज़्यादा चला चुके हैं</div>
+      <div class="tip-body">थकान आपकी और आपकी सवारी — दोनों की सुरक्षा के लिए ख़तरा है। आज के लिए बंद करने पर विचार करें।</div>
+      <div class="chips"><span class="chip"><b style="color:#E23B2E;margin-right:2px">10.2 घं</b> ऑनलाइन</span><span class="chip">आपकी सुरक्षित सीमा: 10 घं</span></div>
+      <button class="cta red" onclick="closeSheet()">आज के लिए बंद करें</button>
+      <button class="cta ghost" onclick="closeSheet()">थोड़ी देर और चलाऊँगा</button>` },
+};
+
+function render(){
+  document.getElementById('earnAmt').textContent = inr(S.earn);
+  document.getElementById('clockPhone').textContent = fmtOS(S.time);
+  document.getElementById('clockBig').textContent = fmtTime(S.time);
+  document.getElementById('hrsV').textContent = S.hrs.toFixed(1);
+  document.getElementById('ridesV').textContent = S.rides;
+  document.getElementById('rateV').textContent = S.rating.toFixed(2);
+  document.getElementById('hrsConsole').textContent = S.hrs.toFixed(1);
+  document.getElementById('earnConsole').textContent = inr(S.earn);
+  document.getElementById('avgTxt').textContent = inr(S.avgHr*S.hrs);
+  const paceHr = S.hrs>0 ? S.earn/S.hrs : 0;
+  document.getElementById('paceNow').textContent = inr(paceHr)+'/hr';
+  const pf = document.getElementById('paceFill');
+  pf.style.width = Math.max(8,Math.min(100, paceHr/S.avgHr*100))+'%';
+  pf.style.background = paceHr < S.avgHr*0.85 ? '#E0A64B' : 'var(--green)';
+  const pt = document.getElementById('paceTag');
+  if(paceHr < S.avgHr*0.9){ pt.className='pace down'; pt.textContent='▼ औसत से नीचे'; }
+  else { pt.className='pace up'; pt.textContent='▲ औसत से ऊपर'; }
+  document.getElementById('hrsStat').classList.toggle('warn', S.hrs > S.ceiling);
+}
+
+function setFlow(stage){
+  document.querySelectorAll('.fstage').forEach(el=>{
+    const s=+el.dataset.s;
+    el.classList.toggle('on', stage>=0 && s<=stage);
+    el.classList.toggle('done', stage>=0 && s<stage);
+  });
+}
+
+function openScenario(key){
+  pause(); const sc=SCN[key]; S={...S,...BASE,...sc.ctx,running:false,scenario:key};
+  render();
+  document.querySelectorAll('.scn').forEach(e=>e.classList.remove('active'));
+  document.getElementById('scn-'+key).classList.add('active');
+  setFlow(sc.flow);
+  document.querySelector('#annot .an-tag').textContent=sc.annTag;
+  document.querySelector('#annot .an-h').textContent=sc.annH;
+  document.getElementById('annBody').innerHTML=sc.ann;
+  document.getElementById('sheet').innerHTML=sc.sheet();
+  document.getElementById('sheetWrap').classList.add('show');
+}
+function closeSheet(){ document.getElementById('sheetWrap').classList.remove('show'); }
+
+function act(key){
+  const d=SCN[key].ahaData; closeSheet();
+  S.time+=60; S.hrs=+(S.hrs+1).toFixed(1); S.rides+=3; S.earn+=d.hourEarn; render(); setFlow(3);
+  const delta=d.hourEarn-d.prev;
+  document.getElementById('aha').innerHTML=`
+    <div class="aha-emoji">🎉</div><div class="aha-h">शाबाश!</div>
+    <div class="aha-amt">+${inr(d.hourEarn)}</div>
+    <div class="aha-delta">इस घंटे आपने ${inr(d.hourEarn)} कमाए — पिछले घंटों के ${inr(d.prev)} से <b>${inr(delta)} ज़्यादा</b>।</div>
+    <div class="aha-link"><span class="aha-node ${d.purple?'p':''}">${d.action}</span><span class="aha-arrow">→</span><span class="aha-node ${d.purple?'p':''}">+${inr(delta)}/घंटा</span></div>
+    <div class="aha-delta" style="font-size:12.5px;margin-top:2px">${d.line}</div>
+    <button class="cta" style="margin-top:18px" onclick="finishAha()">बढ़िया!</button>`;
+  document.getElementById('ahaWrap').classList.add('show'); burst(d.purple);
+}
+function finishAha(){ document.getElementById('ahaWrap').classList.remove('show'); setFlow(4); }
+
+function burst(purple){
+  const host=document.getElementById('aha'); const cols=purple?['#6D4AFF','#05A357','#B3A2F5']:['#05A357','#6D4AFF','#7FD9A8'];
+  for(let i=0;i<16;i++){ const s=document.createElement('div'); s.className='spark';
+    s.style.left='50%'; s.style.top='26%'; s.style.background=cols[i%cols.length]; host.appendChild(s);
+    const ang=Math.random()*6.28, dist=60+Math.random()*95;
+    s.animate([{transform:'translate(-50%,-50%) scale(1)',opacity:1},{transform:`translate(${Math.cos(ang)*dist-50}%,${Math.sin(ang)*dist-50}%) scale(0)`,opacity:0}],{duration:650+Math.random()*350,easing:'cubic-bezier(.2,.7,.3,1)'});
+    setTimeout(()=>s.remove(),1050);
+  }
+}
+
+function play(){ if(S.running)return; S.running=true; document.getElementById('playBtn').textContent='⏸ Pause';
+  timer=setInterval(()=>{ S.time+=15; S.hrs=+(S.hrs+0.25).toFixed(2);
+    const slow=S.scenario&&['hotspot','surge','timing','lowdemand'].includes(S.scenario);
+    S.earn+=Math.round((slow?S.avgHr*0.45:S.avgHr)/4*(0.8+Math.random()*0.4));
+    if(Math.random()<0.4)S.rides++; if(S.time>=1380)pause(); render(); },1000);
+}
+function pause(){ S.running=false; if(timer)clearInterval(timer); document.getElementById('playBtn').textContent='▶ Play'; }
+
+function reset(){ pause(); S={...BASE,running:false,scenario:null}; closeSheet();
+  document.getElementById('ahaWrap').classList.remove('show');
+  document.querySelectorAll('.scn').forEach(e=>e.classList.remove('active')); setFlow(-1);
+  document.querySelector('#annot .an-tag').textContent='What this proves';
+  document.querySelector('#annot .an-h').textContent='Pick a scenario to begin';
+  document.getElementById('annBody').textContent="Each scenario demonstrates one metric or safeguard from the supporting document, in the driver's own context.";
+  render();
+}
+
+const list=document.getElementById('scnList');
+Object.entries(SCN).forEach(([key,sc])=>{ const div=document.createElement('div'); div.className='scn'; div.id='scn-'+key;
+  div.innerHTML=`<button class="scn-btn" onclick="openScenario('${key}')"><span class="scn-num">${sc.n}</span>
+    <span class="scn-main"><span class="scn-tag">${sc.tag}</span><div class="scn-title">${sc.title}</div><div class="scn-why">${sc.why}</div></span></button>`;
+  list.appendChild(div); });
+
+document.getElementById('playBtn').onclick=()=> S.running?pause():play();
+document.getElementById('resetBtn').onclick=reset;
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');});
+setFlow(-1); render();
+</script>
+</body>
+</html>
